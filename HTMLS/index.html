@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Hello, World!</title>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+
+  <!-- Include eel.js - note this file doesn't exist in the 'web' directory -->
+  <script type="text/javascript" src="/eel.js"></script>
+  </script>
+
+<body>
+  <!-- <input type="button" value="Chupa cu" onclick="run(this.value)"> -->
+  <div id="app">
+    <v-app>
+      <v-main>
+        <v-container fill-height fluid>
+
+          <v-row align="center" justify="center" fluid>
+            <v-col cols=10 align="center">
+              <!-- <img src="img/SEILOGO.png" max-width="500"> -->
+              <h1 class="text-h2" id="titulo"><b style="color: #762051;">AUTO</b>SEI</h1>
+              <br>
+              <v-divider></v-divider>
+              <template>
+                <v-timeline>
+                  <transition-group name="list">
+                    <v-timeline-item v-for="logDisciplina in logDisciplinas" :key="logDisciplina" small>
+                      <template v-slot:icon>
+                        <v-avatar v-if="logDisciplina.video == true" color="#762051">
+                          <v-icon dark>mdi-video-outline</v-icon>
+                        </v-avatar>
+                        <v-avatar v-else color="error">
+                          <v-icon dark>mdi-video-off-outline</v-icon>
+                        </v-avatar>
+                      </template>
+                      <template v-slot:opposite>
+                        <span>{{logDisciplina.nome}}</span>
+                      </template>
+                      <v-card class="elevation-2">
+
+                        <v-card-title class="headline">
+                          {{logDisciplina.disciplina}}
+                        </v-card-title>
+
+                        <v-card-text>
+
+                          <v-list dense>
+
+                            <v-subheader>
+
+                              <template v-for="semana in semanainserida" :key="semana"
+                                v-if="semana.codigo == logDisciplina.codigo">
+                                <template v-if="semana.inserida == true">
+                                  SEMANA JÁ INSERIDA
+                                </template>
+                                <template v-else-if="semana.inserida == false && logDisciplina.video == true">
+                                  VIDEOS
+                                </template>
+                              </template>
+
+                              <template v-if="logDisciplina.video == false">
+                                VIDEOS INDISPONIVEIS
+                              </template>
+
+                            </v-subheader>
+                            <transition-group name="list">
+                              <v-list-item-group v-for="logVideo in logVideos" :key="logVideo" color="primary">
+                                <v-list-item v-if="logVideo.codigo == logDisciplina.codigo">
+                                  <v-list-item-icon>
+                                    <v-icon color="success">mdi-video-check</v-icon>
+                                  </v-list-item-icon>
+                                  <v-list-item-content class="text-left">
+                                    <v-list-item-title>{{logVideo.titulo}}</v-list-item-title>
+                                  </v-list-item-content>
+                                </v-list-item>
+                              </v-list-item-group>
+                            </transition-group>
+                          </v-list>
+
+                        </v-card-text>
+                      </v-card>
+                    </v-timeline-item>
+                  </transition-group>
+                </v-timeline>
+              </template>
+
+
+
+              <!-- <template>
+                  <v-timeline>
+                    <v-timeline-item v-for="n in 4" :key="n" small>
+                      <template v-slot:icon>
+                        <v-avatar color="error">
+                          <v-icon dark>mdi-video-outline</v-icon>
+                        </v-avatar>
+                      </template>
+                      <template v-slot:opposite>
+                        <span>Tus eu perfecto</span>
+                      </template>
+                      <v-card class="elevation-2">
+                        <v-card-title class="headline">
+                          Lorem ipsum
+                        </v-card-title>
+                        <v-card-text>
+
+                          <v-list dense>
+                            <v-subheader>VIDEOS</v-subheader>
+                              <v-list-item-group color="primary">
+                                <v-list-item >
+                                  <v-list-item-icon>
+                                    <v-icon color="success">mdi-video-check</v-icon>
+                                  </v-list-item-icon>
+                                  <v-list-item-content class="text-left">
+                                    <v-list-item-title>teste</v-list-item-title>
+                                  </v-list-item-content>
+                                </v-list-item>
+                                <v-list-item >
+                                  <v-list-item-icon>
+                                    <v-icon color="success">mdi-video-check</v-icon>
+                                  </v-list-item-icon>
+                                  <v-list-item-content class="text-left">
+                                    <v-list-item-title>teste</v-list-item-title>
+                                  </v-list-item-content>
+                                </v-list-item>
+                              </v-list-item-group>
+                          </v-list>
+
+                        </v-card-text>
+                      </v-card>
+                    </v-timeline-item>
+                  </v-timeline>
+                </template> -->
+
+
+
+            </v-col>
+          </v-row>
+
+          <v-app-bar elevation="0" dense color="#762051" fixed bottom>
+            <v-spacer></v-spacer>
+
+            <v-speed-dial v-model="fab" transition="scroll-x-reverse-transition">
+              <template v-slot:activator>
+                <v-btn v-model="fab" depressed dark large color="#762051">
+                  <v-icon left v-if="fab">
+                    mdi-close
+                  </v-icon>
+                  <v-icon left v-else>
+                    mdi-video
+                  </v-icon>
+                  Videos
+                </v-btn>
+              </template>
+              <v-btn fab dark color="#762051">
+                <v-icon>mdi-file-video</v-icon>
+              </v-btn>
+              <!-- <template v-slot:activator="{ on, attrs }"> -->
+              <v-btn fab dark v-on="on" color="#762051" @click="carregardisciplinas">
+                <v-icon>mdi-format-list-text</v-icon>
+              </v-btn>
+              <!-- </template> -->
+            </v-speed-dial>
+
+
+
+            <v-dialog v-model="dialog" fullscreen hide-overlay transition="dialog-bottom-transition">
+
+              <v-card>
+                <v-toolbar dark color="#762051">
+                  <v-btn icon dark @click="dialog = false">
+                    <v-icon>mdi-close</v-icon>
+                  </v-btn>
+                  <v-toolbar-title>Configurações da "{{configuracoes.semana}}"</v-toolbar-title>
+                  <v-spacer></v-spacer>
+                  <v-toolbar-items>
+                    <v-btn color="#762051" elevation="0" @click="iniciar('Sim')">
+                      <v-icon left>mdi-animation-play</v-icon>
+                      iniciar
+                    </v-btn>
+                  </v-toolbar-items>
+                </v-toolbar>
+
+                <v-banner app single-line>
+                  <v-icon color="#762051" slot="icon" size="36">
+                    mdi-information
+                  </v-icon>
+                  Foram encontradas <strong>{{contar(disciplinas)}}</strong> disciplinas
+                </v-banner>
+
+                <v-card elevation="0" class="d-flex flex-wrap justify-center flex ma-10">
+                  <v-card class="mx-auto mb-5" width="500" v-for="disciplina in disciplinas"
+                    :key="disciplina.codigo_conteudo">
+                    <v-card-title primary-title>
+                      {{ disciplina.nome_disciplina }}
+                    </v-card-title>
+                    <v-card-subtitle>
+                      {{ disciplina.professor }}
+                    </v-card-subtitle>
+                    <v-card-text>
+                      <v-chip dark color="#5B525E" v-if="disciplina.videos[0].frame != ''">
+                        <v-avatar left>
+                          {{ contar(disciplina.videos) }}
+                        </v-avatar>
+                        Videos
+                      </v-chip>
+                      <v-chip v-else color="error">
+                        <v-avatar left>
+                          0
+                        </v-avatar>
+                        Videos
+                      </v-chip>
+                    </v-card-text>
+                  </v-card>
+                </v-card>
+
+              </v-card>
+            </v-dialog>
+
+          </v-app-bar>
+
+        </v-container>
+
+      </v-main>
+    </v-app>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+  <script src="index.js"></script>
+
+  <style>
+    @font-face {
+      font-family: neuro;
+      src: url("fonts/neuropol-x-bold-2.ttf");
+    }
+
+    #titulo {
+      font-family: "neuro" !important;
+      color: #5B525E;
+    }
+
+    .list-enter-active,
+    .list-leave-active {
+      transition: all 1s;
+    }
+
+    .list-enter,
+    .list-leave-to
+
+    /* .list-leave-active below version 2.1.8 */
+      {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+  </style>
+</body>
+
+</html>
