@@ -1,10 +1,12 @@
 eel.expose(timeline);
 eel.expose(logvideos);
 eel.expose(logsemana);
+eel.expose(relatoriofinal);
 
 var infodisciplinas = [];
 var titulovideos = [];
 var semana = [];
+var dadosr = {};
 
 function timeline(nome, disciplina, video, codigo) {
   //   console.log(nome, disciplina, video, codigo);
@@ -18,12 +20,17 @@ function timeline(nome, disciplina, video, codigo) {
 
 function logvideos(titulo, codigo) {
   //   console.log(titulo, codigo);
-  titulovideos.push({ titulo: titulo, codigo: codigo });
+  titulovideos.push({ titulo: titulo, codigo: codigo});
 }
 
 function logsemana(inserida, codigo) {
-    console.log("Inserida: " + inserida + " Codigo : " + codigo);
-    semana.push({ inserida: inserida, codigo: codigo });
+  console.log("Inserida: " + inserida + " Codigo : " + codigo);
+  semana.push({ inserida: inserida, codigo:  codigo});
+}
+
+function relatoriofinal(tempo, totaldisciplinas, totalvideos, totalDinseridas, faltam) {
+  console.log(tempo, totaldisciplinas, totalvideos, totalDinseridas, faltam);
+  dadosr.push({ tempo: tempo, totaldisciplinas: totaldisciplinas, totalvideos: totalvideos, totalDinseridas: totalDinseridas, faltam: faltam});
 }
 
 function scrolltobottom() {
@@ -31,19 +38,19 @@ function scrolltobottom() {
   element.scrollIntoView({ behavior: "instant", block: "end" });
 }
 
-
-
 new Vue({
   el: "#app",
   vuetify: new Vuetify(),
   data: {
     dialog: false,
+    dialogRelatorio: false,
     fab: false,
     disciplinas: [],
     configuracoes: [],
     logDisciplinas: infodisciplinas,
     logVideos: titulovideos,
-    semanainserida: semana
+    semanainserida: semana,
+    dadosrelatorio: dadosr,
   },
   async mounted() {
     try {
@@ -77,6 +84,9 @@ new Vue({
     },
     logDisciplinas: function () {
       scrolltobottom();
+    },
+    dadosrelatorio: function () {
+      this.dialogRelatorio = true;
     },
   },
 });

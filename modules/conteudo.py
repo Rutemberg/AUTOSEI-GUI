@@ -13,7 +13,9 @@ from datetime import datetime, timedelta
 def iniciar_insercao(disciplinas, configuracoes, opcao):
     agora = datetime.now()
     hora_inicial = agora.strftime("%d/%m/%Y %H:%M:%S")
-
+    total_videos = 0
+    total_d_inseridas = 0
+    d_faltam = 0
     setlocale(LC_ALL, 'pt_BR.utf-8')
 
     # Se a opcao do menu for == 2 aramazenara o codigo em uma variavel
@@ -55,12 +57,6 @@ def iniciar_insercao(disciplinas, configuracoes, opcao):
 
         for disciplina in disciplinas:  # For para percorrer as disciplinas
 
-
-            # Se nao houver videos e a opcao for 3 fara um log com as disciplinas que faltam
-            # if [x for x in disciplina["videos"] if x['frame'] == ''] and opcao == 3:
-            #     log(Disciplinas_que_faltam,
-            #         f"*{disciplina['professor']}* - {disciplina['nome_disciplina']}", "warn", True)
-
             # Abre um arquivo de log e insere o titulo da disciplina
             log(arquivo,
                 f"\n\n{disciplina['professor']} - {disciplina['nome_disciplina']}", "info", True)
@@ -69,7 +65,7 @@ def iniciar_insercao(disciplinas, configuracoes, opcao):
             eel.timeline(disciplina['professor'], disciplina['nome_disciplina'], videos, disciplina['codigo_conteudo'])
             # Se existir videos para serem lançados prossiga com a inserção
             if [x for x in disciplina["videos"] if x['frame'] != '']:
-
+                total_videos+=1
                 # Pesquisa a disciplina pela url e codigo
                 Processar.pesquisar_conteudo(
                     configuracoes["url_conteudo"], disciplina["codigo_conteudo"])
@@ -113,6 +109,7 @@ def iniciar_insercao(disciplinas, configuracoes, opcao):
                         log(arquivo, f"Video: {titulo} inserido", "info")
                         eel.logvideos(titulo, disciplina['codigo_conteudo'])
                         # Se a semana já existir
+                    total_d_inseridas+=1
                 else:
                     log(arquivo, f"{titulo_semana} já inserida !", "info")
                     eel.logsemana(True, disciplina['codigo_conteudo'])
@@ -122,6 +119,7 @@ def iniciar_insercao(disciplinas, configuracoes, opcao):
                 log(Disciplinas_que_faltam,
                     f"*{disciplina['professor']}* - {disciplina['nome_disciplina']}", "warn", True, False, modo="w")
                 log(arquivo, "Videos indisponiveis !", "warn")
+                d_faltam+=1
     else:
         # sys.exit()
         pass
@@ -133,3 +131,5 @@ def iniciar_insercao(disciplinas, configuracoes, opcao):
     print("-"*50)
     log("app",f"\nTempo de execução - {diferenca}", "info", True)
     print("-"*50)
+    diferenca = str(diferenca)
+    eel.relatoriofinal(diferenca, len(disciplinas), total_videos, total_d_inseridas, d_faltam)
