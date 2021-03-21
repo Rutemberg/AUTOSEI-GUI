@@ -65,7 +65,7 @@ def iniciar_insercao(disciplinas, configuracoes, opcao):
             eel.timeline(disciplina['professor'], disciplina['nome_disciplina'], videos, disciplina['codigo_conteudo'])
             # Se existir videos para serem lançados prossiga com a inserção
             if [x for x in disciplina["videos"] if x['frame'] != '']:
-                total_videos+=1
+                
                 # Pesquisa a disciplina pela url e codigo
                 Processar.pesquisar_conteudo(
                     configuracoes["url_conteudo"], disciplina["codigo_conteudo"])
@@ -109,6 +109,8 @@ def iniciar_insercao(disciplinas, configuracoes, opcao):
                         log(arquivo, f"Video: {titulo} inserido", "info")
                         eel.logvideos(titulo, disciplina['codigo_conteudo'])
                         # Se a semana já existir
+                        total_videos+=1
+                        
                     total_d_inseridas+=1
                 else:
                     log(arquivo, f"{titulo_semana} já inserida !", "info")

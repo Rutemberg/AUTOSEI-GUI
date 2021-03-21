@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>Hello, World!</title>
+  <title>AutoSEI</title>
   <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
@@ -13,19 +13,20 @@
   </script>
 
 <body>
-  <div id="app">
+  <div id="app" style="display: none;">
     <v-app>
       <v-main>
         <v-container fill-height fluid>
 
+          <!-- RELATORIO FINAL -->
           <v-dialog overlay-color="#762051" overlay-opacity="0.25" v-model="dialogRelatorio" persistent max-width="500">
             <v-card>
 
               <v-toolbar flat color="#762051" dark>
-                <v-icon large left>mdi-check-bold</v-icon>Inserção finalizada
+                <v-icon large left>mdi-check-bold</v-icon>Inserção finalizada com sucesso
               </v-toolbar>
               <v-card-text>
-                <v-list>
+                <v-list v-for="dadosr in dadosrelatorio">
                   <v-subheader>Relatório</v-subheader>
                   <v-list-item-group v-model="selectedItem" color="primary">
                     <v-list-item>
@@ -33,7 +34,8 @@
                         <v-icon color="#762051">mdi-format-list-text</v-icon>
                       </v-list-item-icon>
                       <v-list-item-content>
-                        <v-list-item-title>{{dadosrelatorio.totaldisciplinas}} disciplinas processadas</v-list-item-title>
+                        <v-list-item-title>Disciplina(s)
+                          processadas: <b style="color: #762051;">{{dadosr.totaldisciplinas}}</b></v-list-item-title>
                       </v-list-item-content>
                     </v-list-item>
                     <v-list-item>
@@ -41,7 +43,8 @@
                         <v-icon color="#762051">mdi-animation-play-outline</v-icon>
                       </v-list-item-icon>
                       <v-list-item-content>
-                        <v-list-item-title>{{dadosrelatorio.totalvideos}} videos processados</v-list-item-title>
+                        <v-list-item-title>Video(s) processados: <b style="color: #762051;">{{dadosr.totalvideos}}</b>
+                        </v-list-item-title>
                       </v-list-item-content>
                     </v-list-item>
                     <v-list-item>
@@ -49,7 +52,8 @@
                         <v-icon color="#762051">mdi-format-list-checks</v-icon>
                       </v-list-item-icon>
                       <v-list-item-content>
-                        <v-list-item-title>{{dadosrelatorio.totalDinseridas}} disciplinas inseridas</v-list-item-title>
+                        <v-list-item-title>Disciplina(s)
+                          inseridas: <b style="color: #762051;">{{dadosr.totalDinseridas}}</b></v-list-item-title>
                       </v-list-item-content>
                     </v-list-item>
                     <v-list-item>
@@ -57,7 +61,8 @@
                         <v-icon color="#762051">mdi-video-off-outline</v-icon>
                       </v-list-item-icon>
                       <v-list-item-content>
-                        <v-list-item-title>{{dadosrelatorio.totalDinseridas}} restantes</v-list-item-title>
+                        <v-list-item-title>Disciplina(s) sem videos: <b style="color: #762051;">{{dadosr.faltam}}</b>
+                        </v-list-item-title>
                       </v-list-item-content>
                     </v-list-item>
                     <v-list-item>
@@ -65,7 +70,7 @@
                         <v-icon color="#762051">mdi-clock-outline</v-icon>
                       </v-list-item-icon>
                       <v-list-item-content>
-                        <v-list-item-title>{{dadosrelatorio.tempo}}</v-list-item-title>
+                        <v-list-item-title><b style="color: #762051;">{{dadosr.tempo}}</b></v-list-item-title>
                       </v-list-item-content>
                     </v-list-item>
                   </v-list-item-group>
@@ -73,24 +78,32 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="#762051" text @click="dialogRelatorio = false">
+                <v-btn color="#762051" text @click="fecharRelatorio()">
                   Ok
                 </v-btn>
               </v-card-actions>
+
             </v-card>
           </v-dialog>
+          <!-- RELATORIO FINAL -->
 
-          <v-row align="center" justify="center" fluid>
+
+          <!-- CONTEUDO -->
+          <v-row align="center" justify="center" fluid fill-height>
             <v-col cols=10 align="center">
-              <!-- <img src="img/SEILOGO.png" max-width="500"> -->
 
-              <h1 class="text-h2" id="titulo"><b style="color: #762051;">AUTO</b>SEI</h1>
+              <!-- LOGOTIPO -->
+              <transition name="list">
+                <v-banner outlined="false" style="z-index: 100;" app single-line color="white" v-if="titulo">
+                  <h1 class="text-h2" id="titulo"><b style="color: #762051;">AUTO</b>SEI</h1>
+                </v-banner>
+              </transition>
               <br>
-              <v-divider></v-divider>
-              <br>
+              <!-- LOGOTIPO -->
 
-              <template>
-                <v-timeline>
+              <!-- TIME LINE -->
+              <transition name="list">
+                <v-timeline v-if="timeline">
                   <transition-group name="list">
                     <v-timeline-item v-for="logDisciplina in logDisciplinas" :key="logDisciplina.codigo" small>
                       <template v-slot:icon>
@@ -122,7 +135,7 @@
                                     SEMANA JÁ INSERIDA
                                   </template>
                                   <template v-else-if="semana.inserida == false && logDisciplina.video == true">
-                                    VIDEOS
+                                    INSERINDO VIDEOS
                                   </template>
                                 </div>
 
@@ -152,7 +165,8 @@
                     </v-timeline-item>
                   </transition-group>
                 </v-timeline>
-              </template>
+              </transition>
+              <!-- TIME LINE -->
 
 
 
@@ -193,59 +207,77 @@
                               </v-list-item-content>
                             </v-list-item>
                           </v-list-item-group>
-                        </v-list>
-
                       </v-card-text>
                     </v-card>
                   </v-timeline-item>
                 </v-timeline>
               </template> -->
 
-
-
             </v-col>
           </v-row>
+          <!-- CONTEUDO -->
 
-          <v-app-bar elevation="0" dense color="#762051" fixed bottom>
 
-            <v-spacer></v-spacer>
+          <!-- APP BOTTOM -->
+          <transition name="list">
+            <v-app-bar elevation="0" v-if="appbar" dense :color="colorbar" fixed bottom>
 
-            <v-speed-dial v-model="fab" transition="scroll-x-reverse-transition">
-              <template v-slot:activator>
-                <v-btn v-model="fab" depressed dark large color="#762051">
-                  <v-icon left v-if="fab">
-                    mdi-close
-                  </v-icon>
-                  <v-icon left v-else>
-                    mdi-video
-                  </v-icon>
-                  Videos
-                </v-btn>
-              </template>
-              <v-tooltip left>
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn v-bind="attrs" v-on="on" fab dark color="#762051">
-                    <v-icon>mdi-play-box</v-icon>
+              <v-spacer></v-spacer>
+
+
+              <!-- MENU -->
+              <v-speed-dial v-if="menu" v-model="fab" transition="scroll-x-reverse-transition">
+                <template v-slot:activator>
+                  <v-btn v-model="fab" depressed dark large color="#762051">
+                    <v-icon left v-if="fab">
+                      mdi-close
+                    </v-icon>
+                    <v-icon left v-else>
+                      mdi-video
+                    </v-icon>
+                    Videos
                   </v-btn>
                 </template>
-                <span>Inserir disciplina especifica</span>
-              </v-tooltip>
-              <v-tooltip left>
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn v-bind="attrs" v-on="on" fab dark color="#762051" @click="carregardisciplinas">
-                    <v-icon>mdi-animation-play</v-icon>
-                  </v-btn>
+                <v-tooltip left>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn v-bind="attrs" v-on="on" fab dark color="#762051">
+                      <v-icon>mdi-play-box</v-icon>
+                    </v-btn>
+                  </template>
+                  <span>Inserir disciplina especifica</span>
+                </v-tooltip>
+                <v-tooltip left>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn v-bind="attrs" v-on="on" fab dark color="#762051" @click="carregardisciplinas">
+                      <v-icon>mdi-animation-play</v-icon>
+                    </v-btn>
+                  </template>
+                  <span>Inserir tudo</span>
+                </v-tooltip>
+              </v-speed-dial>
+              <!-- MENU -->
+
+              <!-- BARRA DE PROGRESSO -->
+              <v-progress-linear v-if="progresso" v-model="power" color="#762051" height="18" dark>
+                <template v-if="logDisciplinas.length != disciplinas.length">
+                  <strong>{{ logDisciplinas.length }} de {{disciplinas.length}}</strong>
                 </template>
-                <span>Inserir tudo</span>
-              </v-tooltip>
-            </v-speed-dial>
+                <template v-else>
+                  <strong>Completo</strong>
+                </template>
+              </v-progress-linear>
+              <!-- BARRA DE PROGRESSO -->
 
-          </v-app-bar>
+            </v-app-bar>
+          </transition>
+          <!-- APP BOTTOM -->
 
 
+          <!-- DIALOGO DE CONFIG DE DISCIPLINAS -->
           <v-dialog v-model="dialog" fullscreen hide-overlay transition="dialog-bottom-transition">
 
             <v-card>
+
               <v-toolbar dark color="#762051">
                 <v-btn icon dark @click="dialog = false">
                   <v-icon>mdi-close</v-icon>
@@ -258,12 +290,19 @@
                 </v-btn>
               </v-toolbar>
 
-              <v-banner app single-line>
+              <!-- INFO DISCIPLINAS -->
+              <v-banner app single-line color="white" ripple>
                 <v-icon color="#762051" slot="icon" size="36">
                   mdi-information
                 </v-icon>
-                Foram encontradas <strong>{{contar(disciplinas)}}</strong> disciplinas
+                Disciplinas encontradas: <strong>{{contar(disciplinas)}}</strong>
+                <br>
+                Videos a serem processados: <strong>{{contarvideos(disciplinas,false)}}</strong>
+                <br>
+                Disciplinas sem videos: <strong>{{contarvideos(disciplinas,true)}}</strong>
               </v-banner>
+              <!-- INFO DISCIPLINAS -->
+
 
               <v-card elevation="0" class="d-flex flex-wrap justify-center flex ma-10">
                 <v-card class="mx-auto mb-5" width="500" v-for="disciplina in disciplinas"
@@ -293,10 +332,10 @@
 
             </v-card>
           </v-dialog>
+          <!-- DIALOGO DE CONFIG DE DISCIPLINAS -->
 
 
         </v-container>
-
       </v-main>
     </v-app>
   </div>
@@ -311,6 +350,10 @@
       src: url("fonts/neuropol-x-bold-2.ttf");
     }
 
+    html {
+      overflow-y: auto;
+    }
+
     #titulo {
       font-family: "neuro" !important;
       color: #5B525E;
@@ -321,13 +364,17 @@
       transition: all 1s;
     }
 
-    .list-enter,
-    .list-leave-to
+    .list-enter
 
     /* .list-leave-active below version 2.1.8 */
       {
       opacity: 0;
       transform: translateY(30px);
+    }
+
+    .list-leave-to {
+      opacity: 0;
+      transform: translateY(-30px);
     }
   </style>
 </body>

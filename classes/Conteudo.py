@@ -1,5 +1,5 @@
 from selenium.webdriver import Chrome
-# from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -11,9 +11,9 @@ class Inserir_Conteudo:
 
     # Inicia o driver caso a resposta seja sim ou s
     def __init__(self):
-        # self.options = Options()
-        # self.options.add_argument('--log-level=2')
-        self.driver = Chrome()
+        self.options = Options()
+        self.options.add_experimental_option('excludeSwitches', ['enable-logging'])
+        self.driver = Chrome(options=self.options)
 
 
     # abre o site pela url
