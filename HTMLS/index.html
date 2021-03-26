@@ -218,14 +218,244 @@
           <!-- CONTEUDO -->
 
 
+          <!-- FORMULARIO -->
+
+          <template>
+            <v-row justify="center">
+              <v-dialog v-model="formularioinsercao" overlay-color="#762051" overlay-opacity="0.25" persistent
+                max-width="600px">
+                <v-card>
+
+                  <v-toolbar flat color="#762051" dark>
+                    <v-icon large left>mdi-file-plus</v-icon>Cadastrar disciplina
+                  </v-toolbar>
+
+                  <v-card-text>
+                    <v-container>
+                      <v-row>
+
+                        <v-col cols="12" sm="12" md="12">
+                          <v-text-field label="Nome disciplina" v-model="camposDisciplina.nome_disciplina" required>
+                          </v-text-field>
+                        </v-col>
+
+                        <v-col cols="12" sm="6" md="6">
+                          <v-text-field type="number" label="Código disciplina"
+                            v-model="camposDisciplina.codigo_disciplina" required>
+                          </v-text-field>
+                        </v-col>
+
+                        <v-col cols="12" sm="6" md="6">
+                          <v-text-field type="number" label="Codigo de conteudo"
+                            hint="Este codigo é importante, nao erre!" v-model="camposDisciplina.codigo_conteudo"
+                            persistent-hint required></v-text-field>
+                        </v-col>
+
+                        <v-col cols="12">
+                          <v-text-field number label="Nome do professor" v-model="camposDisciplina.professor" required>
+                          </v-text-field>
+                        </v-col>
+
+                      </v-row>
+                    </v-container>
+                  </v-card-text>
+
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="#762051" text @click="formularioinsercao = false">
+                      Fechar
+                    </v-btn>
+                    <v-btn color="#762051" text @click="inserirdisciplinas()">
+                      Salvar
+                    </v-btn>
+                  </v-card-actions>
+                  <!-- {{mensagemDisciplina}} -->
+                </v-card>
+              </v-dialog>
+            </v-row>
+          </template>
+          <!-- FORMULARIO -->
+
+
+          <!-- LISTA DE DISCIPLINAS -->
+          <v-dialog v-model="dialoglistadisciplinas" fullscreen hide-overlay transition="dialog-bottom-transition">
+
+            <v-card>
+
+              <v-toolbar dark color="#762051">
+                <v-btn icon dark @click="limparlistadisciplinas()">
+                  <v-icon>mdi-close</v-icon>
+                </v-btn>
+                <v-toolbar-title>Lista de disciplinas cadastradas no banco</v-toolbar-title>
+                <v-spacer></v-spacer>
+                <v-btn rounded dark color="transparent" elevation="0" @click="formularioinsercao = true">
+                  <v-icon left>mdi-file-plus</v-icon>
+                  Cadastrar disciplina
+                </v-btn>
+              </v-toolbar>
+
+              <!-- INFO DISCIPLINAS -->
+              <v-banner app single-line color="white" ripple>
+                <v-icon color="#762051" slot="icon" size="36">
+                  mdi-information
+                </v-icon>
+                Disciplinas encontradas: <strong>{{contar(listadisciplinas)}}</strong>
+              </v-banner>
+              <!-- INFO DISCIPLINAS -->
+
+
+              <v-card elevation="0">
+                <transition-group name="list" class="d-flex flex-wrap justify-center flex ma-10">
+                  <v-card class="mx-auto mb-5" width="450" v-for="disciplina in listadisciplinas"
+                    :key="disciplina.codigo_conteudo">
+                    <v-list-item three-line>
+                      <v-list-item-content>
+                        <div class="overline">
+                          {{disciplina.professor}}
+                        </div>
+                        <v-list-item-title class="headline">
+                          {{disciplina.nome_disciplina}}
+                        </v-list-item-title>
+                      </v-list-item-content>
+
+                      <v-list-item-avatar tile size="60" class="display-2">{{disciplina.codigo_conteudo}}
+                      </v-list-item-avatar>
+                    </v-list-item>
+
+                    <!-- <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn class="mb-2" color="transparent" elevation="0">
+                        <v-icon fab dark color="error">mdi-delete</v-icon>
+                      </v-btn>
+                    </v-card-actions> -->
+
+                  </v-card>
+                </transition-group>
+              </v-card>
+
+            </v-card>
+          </v-dialog>
+          <!-- LISTA DE DISCIPLINAS -->
+
+
+          <!-- SEMANA -->
+          <v-dialog v-model="semana" fullscreen hide-overlay transition="dialog-bottom-transition">
+
+            <v-card>
+
+              <v-toolbar elevation="0" dark color="#762051">
+                <v-btn icon dark @click="semana = false">
+                  <v-icon>mdi-close</v-icon>
+                </v-btn>
+                <v-toolbar-title>Inserir semana</v-toolbar-title>
+                <v-spacer></v-spacer>
+                <v-btn @click="" text>
+                  <v-icon>mdi-play</v-icon>
+                </v-btn>
+              </v-toolbar>
+
+              <v-banner app single-line color="#762051" ripple>
+                <v-text-field filled color="#762051" dark placeholder="DIGITE A SEMANA AQUI" hide-details
+                  loading="#762051" flat class="text-h4 pa-0"></v-text-field>
+              </v-banner>
+
+              <v-carousel hide-delimiters progress progress-color="#762051">
+                <v-sheet color="#f8f8f8">
+
+                  <v-carousel-item v-for="disciplinas in disciplinassemana" :key="disciplinas.codigo_conteudo">
+                    <v-row class="fill-height" align="center" justify="center">
+                      <v-card width="800" light style="max-height: inherit;overflow: auto;position: relative">
+                        <v-list-item three-line>
+                          <v-list-item-content>
+
+                            <div class="overline">
+                              {{disciplinas.professor}}
+                            </div>
+                            <v-list-item-title class="headline mb-5">
+                              {{disciplinas.nome_disciplina}}
+                            </v-list-item-title>
+
+                            <v-col cols="10">
+                              <v-text-field @keyup="titulo = $event.target.value" filled color="#762051"
+                                placeholder="Titulo do vídeo" hide-details flat class="text-h6 pa-0"></v-text-field>
+                            </v-col>
+                            <v-col cols="10">
+                              <v-text-field @keyup="frame = $event.target.value" filled color="#762051"
+                                placeholder="Código" hide-details flat class="text-h6 pa-0"></v-text-field>
+                            </v-col>
+                            <v-list-item-action>
+                              <v-btn @click="montarvideos(disciplinas.codigo_conteudo)" left text fab>
+                                <v-icon>mdi-plus</v-icon>
+                              </v-btn>
+                            </v-list-item-action>
+                          </v-list-item-content>
+
+                          <v-list-item-avatar tile size="60" class="display-2">{{disciplinas.codigo_conteudo}}
+                          </v-list-item-avatar>
+
+                        </v-list-item>
+                        <v-expand-transition>
+                          <div v-if="vervideos" class="d-flex transition-fast-in-fast-out v-card--reveal display-3"
+                            style="height: 100%;background-color: #762051;">
+
+
+
+                            <v-list three-line width="90%" color="#762051" height="100%" overflow="auto">
+                              <v-subheader dark>Lista de videos cadastrados</v-subheader>
+                              <template v-for="video in videos">
+                                <template v-if="video.cd == disciplinas.codigo_conteudo">
+                                  <v-list-item dark>
+                                    <v-list-item-avatar>
+                                      <v-icon>mdi-video-outline</v-icon>
+                                    </v-list-item-avatar>
+
+                                    <v-list-item-content>
+                                      <v-list-item-title>{{video.titulo}}</v-list-item-title>
+                                      <v-list-item-subtitle>{{video.frame}}</v-list-item-subtitle>
+                                    </v-list-item-content>
+                                  </v-list-item>
+                                  <v-divider color="white"></v-divider>
+                                </template>
+                              </template>
+
+                            </v-list>
+
+                          </div>
+                        </v-expand-transition>
+                        <v-footer class="d-flex align-center justify-center">
+                          <v-btn height="20" @click="vervideos = !vervideos" flat text>
+                            <v-icon v-if="!vervideos">mdi-menu-up-outline</v-icon>
+                            <v-icon v-else>mdi-menu-down-outline</v-icon>
+                            {{contvideos(videos, disciplinas.codigo_conteudo)}}
+                          </v-btn>
+                        </v-footer>
+                      </v-card>
+                    </v-row>
+                  </v-carousel-item>
+                </v-sheet>
+              </v-carousel>
+
+            </v-card>
+          </v-dialog>
+          <!-- SEMANA -->
+
+
+
           <!-- APP BOTTOM -->
           <transition name="list">
             <v-app-bar elevation="0" v-if="appbar" dense :color="colorbar" fixed bottom>
 
               <v-spacer></v-spacer>
 
-
               <!-- MENU -->
+              <v-btn @click="carregarsemana()" depressed dark large color="#762051">
+                <v-icon left>mdi-file</v-icon>
+                SEMANA
+              </v-btn>
+              <v-btn @click="listardisciplinas()" depressed dark large color="#762051">
+                <v-icon left>mdi-file</v-icon>
+                Disciplinas
+              </v-btn>
               <v-speed-dial v-if="menu" v-model="fab" transition="scroll-x-reverse-transition">
                 <template v-slot:activator>
                   <v-btn v-model="fab" depressed dark large color="#762051">
@@ -235,7 +465,7 @@
                     <v-icon left v-else>
                       mdi-video
                     </v-icon>
-                    Videos
+                    Inserir
                   </v-btn>
                 </template>
                 <v-tooltip left>
@@ -256,6 +486,7 @@
                 </v-tooltip>
               </v-speed-dial>
               <!-- MENU -->
+
 
               <!-- BARRA DE PROGRESSO -->
               <v-progress-linear v-if="progresso" v-model="power" color="#762051" height="18" dark>
@@ -335,6 +566,8 @@
           <!-- DIALOGO DE CONFIG DE DISCIPLINAS -->
 
 
+
+
         </v-container>
       </v-main>
     </v-app>
@@ -375,6 +608,15 @@
     .list-leave-to {
       opacity: 0;
       transform: translateY(-30px);
+    }
+
+    .v-card--reveal {
+      align-items: center;
+      bottom: 0;
+      justify-content: center;
+      position: absolute;
+      width: 100%;
+      overflow: auto;
     }
   </style>
 </body>

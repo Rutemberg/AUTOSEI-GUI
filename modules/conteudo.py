@@ -119,7 +119,7 @@ def iniciar_insercao(disciplinas, configuracoes, opcao):
             else:
                 # Cria ou abre o log informando em dois arquivos
                 log(Disciplinas_que_faltam,
-                    f"*{disciplina['professor']}* - {disciplina['nome_disciplina']}", "warn", True, False, modo="w")
+                    f"*{disciplina['professor']}* - {disciplina['nome_disciplina']}", "warn", True, False)
                 log(arquivo, "Videos indisponiveis !", "warn")
                 d_faltam+=1
     else:

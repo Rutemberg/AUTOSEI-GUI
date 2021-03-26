@@ -13,6 +13,7 @@ class Inserir_Conteudo:
     def __init__(self):
         self.options = Options()
         self.options.add_experimental_option('excludeSwitches', ['enable-logging'])
+        # self.options.add_argument("headless")
         self.driver = Chrome(options=self.options)
 
 
