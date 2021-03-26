@@ -66,8 +66,10 @@ new Vue({
   el: "#app",
   vuetify: new Vuetify(),
   data: {
-    titulo: "",
-    frame: "",
+    video: {
+      titulo: "",
+      frame: "",
+    },
     videos: [],
     vervideos: false,
     semana: false,
@@ -190,7 +192,7 @@ new Vue({
       return qtd;
     },
     montarvideos: function (codigo) {
-      this.videos.push({ cd: codigo, titulo: this.titulo, frame: this.frame });
+      this.videos.push({ cd: codigo, titulo: this.video.titulo, frame: this.video.frame });
       console.log(this.videos);
     },
   },
