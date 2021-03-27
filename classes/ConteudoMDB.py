@@ -6,10 +6,9 @@ class ConteudoMDB:
     def __init__(self, banco):
 
         self.client = pymongo.MongoClient(
-            "mongodb+srv://novousuario:ggwaE2eZPpPAGAEx@cluster0.2if2x.mongodb.net")
+            f"mongodb://novousuario:ggwaE2eZPpPAGAEx@cluster0-shard-00-00.2if2x.mongodb.net:27017,cluster0-shard-00-01.2if2x.mongodb.net:27017,cluster0-shard-00-02.2if2x.mongodb.net:27017/{banco}?ssl=true&replicaSet=atlas-sara4b-shard-0&authSource=admin&retryWrites=true&w=majority")
         self.banco = self.client[f"{banco}"]
         self.table = None
-
     # Retorna um array
     def list_tables(self):
         tabelas = []
