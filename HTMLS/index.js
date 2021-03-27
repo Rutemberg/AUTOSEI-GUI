@@ -66,6 +66,7 @@ new Vue({
   el: "#app",
   vuetify: new Vuetify(),
   data: {
+    windowHeight: window.innerHeight,
     alert: {
       on: false,
       message: "",
@@ -123,8 +124,15 @@ new Vue({
     main.style.display = "block";
     this.titulo = true;
     this.appbar = true;
+    window.addEventListener("resize", this.onResize);
+  },
+  beforeDestroy() {
+    window.removeEventListener("resize", this.onResize);
   },
   methods: {
+    onResize() {
+      this.windowHeight = window.innerHeight;
+    },
     async carregardisciplinas() {
       try {
         let disciplinas = await eel.carregar_disciplinas()();

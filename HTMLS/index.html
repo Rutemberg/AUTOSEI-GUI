@@ -113,7 +113,7 @@
               <!-- LOGOTIPO -->
               <transition name="list">
                 <v-banner outlined="false" style="z-index: 100;" app single-line color="white" v-if="titulo">
-                  <h1 class="text-h2" id="titulo"><b style="color: #762051;">AUTO</b>SEI</h1>
+                  <h1 class="text-h2" id="titulo"><b style="color: #762051;">AUTO</b>SEI </h1>
                 </v-banner>
               </transition>
               <br>
@@ -298,7 +298,7 @@
           <!-- LISTA DE DISCIPLINAS -->
           <v-dialog v-model="dialoglistadisciplinas" fullscreen hide-overlay transition="dialog-bottom-transition">
 
-            <v-card>
+            <v-card color="#f8f8f8">
 
               <v-toolbar dark color="#762051">
                 <v-btn icon dark @click="limparlistadisciplinas()">
@@ -322,7 +322,7 @@
               <!-- INFO DISCIPLINAS -->
 
 
-              <v-card elevation="0">
+              <v-card elevation="0" color="#f8f8f8">
                 <transition-group name="list" class="d-flex flex-wrap justify-center flex ma-10">
                   <v-card class="mx-auto mb-5" width="450" v-for="disciplina in listadisciplinas"
                     :key="disciplina.codigo_conteudo">
@@ -359,7 +359,7 @@
           <!-- MONTAR SEMANA -->
           <v-dialog v-model="semana" fullscreen persistent transition="dialog-bottom-transition">
 
-            <v-card>
+            <v-card >
 
               <v-toolbar elevation="0" dark color="#762051">
                 <v-btn icon dark @click="semana = false">
@@ -374,10 +374,10 @@
 
               <v-banner app single-line color="#762051" ripple>
                 <v-text-field v-model="titulosemana" filled color="#762051" dark placeholder="DIGITE A SEMANA AQUI"
-                  hide-details loading="#762051" flat class="text-h4 pa-0"></v-text-field>
+                  hide-details loading="#f8f8f8" flat class="text-h4 pa-0"></v-text-field>
               </v-banner>
 
-              <v-carousel :continuous="false" hide-delimiters progress progress-color="#762051">
+              <v-carousel :continuous="false" hide-delimiters progress progress-color="#762051" :height="windowHeight - 137">
                 <v-sheet color="#f8f8f8">
 
                   <v-carousel-item v-for="disciplinas in disciplinassemana" :key="disciplinas.codigo_conteudo">
@@ -529,7 +529,7 @@
           <!-- DIALOGO DE CONFIG DE DISCIPLINAS -->
           <v-dialog v-model="dialog" fullscreen hide-overlay transition="dialog-bottom-transition">
 
-            <v-card>
+            <v-card color="#f8f8f8">
 
               <v-toolbar dark color="#762051">
                 <v-btn icon dark @click="dialog = false">
@@ -557,7 +557,7 @@
               <!-- INFO DISCIPLINAS -->
 
 
-              <v-card elevation="0" class="d-flex flex-wrap justify-center flex ma-10">
+              <v-card color="#f8f8f8" elevation="0" class="d-flex flex-wrap justify-center flex ma-10">
                 <v-card class="mx-auto mb-5" width="500" v-for="disciplina in disciplinas"
                   :key="disciplina.codigo_conteudo">
                   <v-card-title primary-title>
