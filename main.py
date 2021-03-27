@@ -16,8 +16,8 @@ configuracoes = abrir_arquivo_json(config)
 disciplinas = abrir_arquivo_json(semana)
 
 @eel.expose
-def inserir_documento(document, tabela):
-    return inserir(document, tabela)
+def inserir_documento(document, tabela, muitos=False):
+    return inserir(document, tabela, muitos)
     
 @eel.expose
 def listar_documentos(tabela):

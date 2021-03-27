@@ -18,6 +18,24 @@
       <v-main>
         <v-container fill-height fluid>
 
+          <!-- ALERTA -->
+
+          <!-- <v-alert v-model="alert.on" dense outlined :type="alert.type" transition="fade-transition" dismissible>
+            {{alert.message}}
+          </v-alert> -->
+
+          <v-snackbar v-model="alert.on" :color="alert.color">
+            <v-icon left>{{alert.type}}</v-icon>
+            {{alert.message}}
+            <template v-slot:action="{ attrs }">
+              <v-btn text v-bind="attrs" fab small @click="alert.on = false">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </template>
+          </v-snackbar>
+
+          <!-- ALERTA -->
+
           <!-- RELATORIO FINAL -->
           <v-dialog overlay-color="#762051" overlay-opacity="0.25" v-model="dialogRelatorio" persistent max-width="500">
             <v-card>
@@ -338,8 +356,8 @@
           <!-- LISTA DE DISCIPLINAS -->
 
 
-          <!-- SEMANA -->
-          <v-dialog v-model="semana" fullscreen hide-overlay transition="dialog-bottom-transition">
+          <!-- MONTAR SEMANA -->
+          <v-dialog v-model="semana" fullscreen persistent transition="dialog-bottom-transition">
 
             <v-card>
 
@@ -349,17 +367,17 @@
                 </v-btn>
                 <v-toolbar-title>Inserir semana</v-toolbar-title>
                 <v-spacer></v-spacer>
-                <v-btn @click="" text>
+                <v-btn @click="inserirvideossemana()" text>
                   <v-icon>mdi-play</v-icon>
                 </v-btn>
               </v-toolbar>
 
               <v-banner app single-line color="#762051" ripple>
-                <v-text-field filled color="#762051" dark placeholder="DIGITE A SEMANA AQUI" hide-details
-                  loading="#762051" flat class="text-h4 pa-0"></v-text-field>
+                <v-text-field v-model="titulosemana" filled color="#762051" dark placeholder="DIGITE A SEMANA AQUI"
+                  hide-details loading="#762051" flat class="text-h4 pa-0"></v-text-field>
               </v-banner>
 
-              <v-carousel hide-delimiters progress progress-color="#762051">
+              <v-carousel :continuous="false" hide-delimiters progress progress-color="#762051">
                 <v-sheet color="#f8f8f8">
 
                   <v-carousel-item v-for="disciplinas in disciplinassemana" :key="disciplinas.codigo_conteudo">
@@ -376,12 +394,15 @@
                             </v-list-item-title>
 
                             <v-col cols="10">
-                              <v-text-field @keyup="video.titulo = $event.target.value" filled color="#762051"
-                                placeholder="Titulo do vídeo" hide-details flat class="text-h6 pa-0"></v-text-field>
+                              <v-text-field v-on:keyup.enter="montarvideos(disciplinas.codigo_conteudo)"
+                                v-model="video.titulo" filled color="#762051" placeholder="Titulo do vídeo" hide-details
+                                flat class="text-h6 pa-0"></v-text-field>
                             </v-col>
                             <v-col cols="10">
-                              <v-text-field @keyup="video.frame = $event.target.value" filled color="#762051"
-                                placeholder="Código" hide-details flat class="text-h6 pa-0"></v-text-field>
+                              <v-text-field type="number" v-model="video.frame"
+                                v-on:keyup.enter="montarvideos(disciplinas.codigo_conteudo)" filled color="#762051"
+                                placeholder="Código" hide-details flat class="text-h6 pa-0">
+                              </v-text-field>
                             </v-col>
                             <v-list-item-action>
                               <v-btn @click="montarvideos(disciplinas.codigo_conteudo)" left text fab>
@@ -403,7 +424,7 @@
                             <v-list three-line width="90%" color="#762051" height="100%" overflow="auto">
                               <v-subheader dark>Lista de videos cadastrados</v-subheader>
                               <template v-for="video in videos">
-                                <template v-if="video.cd == disciplinas.codigo_conteudo">
+                                <template v-if="video.codigo_conteudo == disciplinas.codigo_conteudo">
                                   <v-list-item dark>
                                     <v-list-item-avatar>
                                       <v-icon>mdi-video-outline</v-icon>
@@ -413,6 +434,7 @@
                                       <v-list-item-title>{{video.titulo}}</v-list-item-title>
                                       <v-list-item-subtitle>{{video.frame}}</v-list-item-subtitle>
                                     </v-list-item-content>
+                                    <v-icon @click="deletarvideosemana(video.frame)">mdi-delete</v-icon>
                                   </v-list-item>
                                   <v-divider color="white"></v-divider>
                                 </template>
@@ -437,7 +459,7 @@
 
             </v-card>
           </v-dialog>
-          <!-- SEMANA -->
+          <!-- MONTAR SEMANA -->
 
 
 
@@ -448,11 +470,11 @@
               <v-spacer></v-spacer>
 
               <!-- MENU -->
-              <v-btn @click="carregarsemana()" depressed dark large color="#762051">
+              <v-btn v-if="menu" @click="carregarsemana()" depressed dark large color="#762051">
                 <v-icon left>mdi-file</v-icon>
                 SEMANA
               </v-btn>
-              <v-btn @click="listardisciplinas()" depressed dark large color="#762051">
+              <v-btn v-if="menu" @click="listardisciplinas()" depressed dark large color="#762051">
                 <v-icon left>mdi-file</v-icon>
                 Disciplinas
               </v-btn>
@@ -615,6 +637,7 @@
       bottom: 0;
       justify-content: center;
       position: absolute;
+      opacity: 0.97;
       width: 100%;
       overflow: auto;
     }

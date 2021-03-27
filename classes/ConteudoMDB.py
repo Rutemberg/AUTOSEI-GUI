@@ -1,5 +1,6 @@
 import pymongo
 
+
 class ConteudoMDB:
 
     def __init__(self, banco):
@@ -23,13 +24,20 @@ class ConteudoMDB:
         table = self.banco[f"{tabela}"]
         self.table = table
 
-    def insert(self, document):
+    def insert(self, document, muitos=False):
         try:
-            q = self.table.insert_one(document)
-            # print("Registrado com sucesso")
+            if muitos == False:
+                q = self.table.insert_one(document)
+            else:
+                q = self.table.insert_many(document)
+
+            print("Registrado com sucesso")
             return True
         except pymongo.errors.DuplicateKeyError:
-            # print("Já existe um registro")
+            print("Já existe um registro")
+            return False
+        except pymongo.errors.BulkWriteError:
+            print("Já existe um registro")
             return False
 
     def find_all(self):
@@ -56,29 +64,25 @@ class ConteudoMDB:
 #     "codigo_conteudo": 768
 # }
 
-# videos = {  
-#             "_id": 447,
-#             "codigo_disciplina": 447,
-#             "nome_disciplina": "Direito Processual Civil III",
-#             "professor": "Thiago",
-#             "videos":
-#                     [
-#                         {
-#                         "titulo": "teste",
-#                         "frame": 123456789
-#                         },
-#                         {
-#                         "titulo": "teste",
-#                         "frame": 123456789
-#                         }
-#                     ]
-# }
+videos = [{
+    "codigo_conteudo": 6,
+    "titulo": "teste",
+    "frame": 123456789,
+    "info": "DISNPONIVEL PARA INSERCAO"
+},
+    {
+    "codigo_conteudo": 6,
+    "titulo": "teste II",
+    "frame": 654655658,
+    "info": "DISNPONIVEL PARA INSERCAO"
 
+}
+]
 
 
 # conteudo_mdb = ConteudoMDB("AutoSEI")
 # conteudo_mdb.tabela("SEMANA 01")
-# conteudo_mdb.insert(videos)
+# conteudo_mdb.insert(videos, True)
 # # conteudo_mdb.find_all()
 # lista = conteudo_mdb.list_tables()
 # print(lista)

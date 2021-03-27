@@ -1,11 +1,11 @@
 from classes.ConteudoMDB import ConteudoMDB
 import eel
 
-def inserir(document, tabela):
+def inserir(document, tabela, muitos=False):
     
     inserirD = ConteudoMDB("AutoSEI")
     inserirD.tabela(tabela)
-    result = inserirD.insert(document)
+    result = inserirD.insert(document, muitos)
 
     if result == True:
         print("Inserido com sucesso!")
