@@ -80,6 +80,7 @@ new Vue({
       frame: "",
     },
     videos: [],
+    videoparacadastrar: {},
     vervideos: false,
     semana: false,
     disciplinassemana: [],
@@ -189,35 +190,6 @@ new Vue({
       this.videos = filtered;
       console.log(this.videos);
     },
-    async inserirvideossemana() {
-      let videos = this.videos;
-      let titulosemana = this.titulosemana;
-      if (videos.length > 0 && titulosemana != "") {
-        let result = await eel.inserir_documento(videos, titulosemana, true)();
-        if (result == true) {
-          this.alertar(
-            true,
-            "Semana cadastrada com sucesso!",
-            "mdi-check-bold",
-            "success"
-          );
-        } else {
-          this.alertar(
-            true,
-            "Já existe um ou mais frames inseridos no banco",
-            "mdi-alert",
-            "error"
-          );
-        }
-      } else {
-        this.alertar(
-          true,
-          "Insira o nome da semana e algum video para poder inserir",
-          "mdi-alert",
-          "error"
-        );
-      }
-    },
     async inserirdisciplinas() {
       this.camposDisciplina._id = this.camposDisciplina.codigo_conteudo;
 
@@ -257,6 +229,24 @@ new Vue({
       this.listadisciplinas = disciplinas.reverse();
       this.dialoglistadisciplinas = true;
     },
+    async deletar(document) {
+      let d = await eel.remover_documentos(this.titulosemana, document)();
+
+      if (d > 0) {
+        this.alertar(
+          true,
+          "Frame removido com sucesso",
+          "mdi-code-tags",
+          "success"
+        );
+        let v = await eel.listar_documentos(this.titulosemana)();
+        if (v.length > 0) {
+          this.videos = v;
+        }
+      } else {
+        this.alertar(true, "Frame nao encontrado", "mdi-code-tags", "error");
+      }
+    },
     alertar: function (on, message, type, color) {
       this.alert.on = on;
       this.alert.message = message;
@@ -281,28 +271,44 @@ new Vue({
       });
       return qtd;
     },
-    montarvideos: function (codigo) {
+    async montarvideos(codigo) {
       this.video._id = this.video.frame;
 
-      if (this.video.frame != "") {
-        this.videos.push({
-          _id: this.video._id,
-          codigo_conteudo: codigo,
-          titulo: this.video.titulo,
-          frame: this.video.frame,
-          info: "DISPONIVEL PARA INSERCAO",
-        });
-        this.alertar(
-          true,
-          "Frame adicionado com sucesso",
-          "mdi-code-tags-check",
-          "success"
-        );
+      if (this.video.frame != "" && this.titulosemana != "") {
+        this.videoparacadastrar._id = this.video._id;
+        this.videoparacadastrar.codigo_conteudo = codigo;
+        this.videoparacadastrar.titulo = this.video.titulo;
+        this.videoparacadastrar.frame = this.video.frame;
+        this.videoparacadastrar.info = "DISPONIVEL PARA INSERCAO";
+
+        let result = await eel.inserir_documento(
+          this.videoparacadastrar,
+          this.titulosemana
+        )();
+        if (result == true) {
+          this.alertar(
+            true,
+            "Frame cadastrado com sucesso!",
+            "mdi-check-bold",
+            "success"
+          );
+          let v = await eel.listar_documentos(this.titulosemana)();
+          if (v.length > 0) {
+            this.videos = v;
+          }
+        } else {
+          this.alertar(true, "Frame já cadastrado", "mdi-alert", "error");
+        }
         // console.log(this.videos);
         this.video.frame = "";
         this.video.titulo = "";
       } else {
-        this.alertar(true, "Campo frame em branco", "mdi-code-tags", "error");
+        this.alertar(
+          true,
+          "Campos frame ou semana em branco",
+          "mdi-code-tags",
+          "error"
+        );
       }
     },
   },
@@ -319,6 +325,22 @@ new Vue({
     dadosrelatorio: function () {
       scrolltobottom();
       this.dialogRelatorio = true;
+    },
+    async titulosemana() {
+      this.videos = [];
+      let titulosem = this.titulosemana.toUpperCase();
+      console.log(titulosem);
+      let v = await eel.listar_documentos(titulosem)();
+      if (v.length > 0) {
+        this.videos = v;
+        this.vervideos = true;
+        this.alertar(
+          true,
+          `Foram encontrados ${v.length} frames cadastrados em ${titulosem}`,
+          "mdi-code-tags",
+          "success"
+        );
+      }
     },
   },
 });

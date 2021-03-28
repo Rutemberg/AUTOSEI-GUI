@@ -32,5 +32,9 @@ def listartudo(tabela):
         print(disciplinas)
         return disciplinas
     
-
+def remover(tabela, documento):
+    removerD = ConteudoMDB("AutoSEI")
+    removerD.tabela(tabela)
+    result = removerD.remove(documento)
+    return result 
     

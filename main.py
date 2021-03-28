@@ -22,6 +22,10 @@ def inserir_documento(document, tabela, muitos=False):
 @eel.expose
 def listar_documentos(tabela):
     return listartudo(tabela)
+    
+@eel.expose
+def remover_documentos(tabela, document):
+    return remover(tabela, document)
 
     
 @eel.expose

@@ -10,6 +10,7 @@ class ConteudoMDB:
         self.banco = self.client[f"{banco}"]
         self.table = None
     # Retorna um array
+
     def list_tables(self):
         tabelas = []
         lista = self.banco.list_collections()
@@ -54,6 +55,12 @@ class ConteudoMDB:
         count = query.find_one({"codigo_disciplina": codigo})
         return count
 
+    def remove(self, document):
+            q = self.table.delete_one(document)
+            result = q.deleted_count
+            return result
+
+
 
 # disciplina = {
 #     "_id": 768,
@@ -62,7 +69,6 @@ class ConteudoMDB:
 #     "professor": "Thiago",
 #     "codigo_conteudo": 768
 # }
-
 videos = [{
     "codigo_conteudo": 6,
     "titulo": "teste",
@@ -81,8 +87,10 @@ videos = [{
 
 # conteudo_mdb = ConteudoMDB("AutoSEI")
 # conteudo_mdb.tabela("SEMANA 01")
+# frame = {"frame": "123"}
+# print(conteudo_mdb.remove(frame))
 # conteudo_mdb.insert(videos, True)
-# # conteudo_mdb.find_all()
+# conteudo_mdb.find_all()
 # lista = conteudo_mdb.list_tables()
 # print(lista)
 # print(conteudo_mdb.find_one(1))
