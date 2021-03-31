@@ -66,6 +66,9 @@ new Vue({
   el: "#app",
   vuetify: new Vuetify(),
   data: {
+    nometabela: "",
+    tabelas: [],
+    semanas: [],
     windowHeight: window.innerHeight,
     alert: {
       on: false,
@@ -89,6 +92,7 @@ new Vue({
     mensagemDisciplina,
     formularioinsercao: false,
     dialoglistadisciplinas: false,
+    tabeladisciplina: "",
     camposDisciplina: {
       _id: "",
       nome_disciplina: "Ciência Política",
@@ -117,7 +121,11 @@ new Vue({
   async mounted() {
     try {
       let configuracoes = await eel.carregar_configuracoes()();
+      let semanas = await eel.listar_tabelas("semana")();
+      await this.listartabelas();
+      this.semanas = semanas.reverse();
       this.configuracoes = configuracoes;
+      // console.log(this.tabelas);
     } catch (e) {
       console.error(e);
     }
@@ -131,6 +139,10 @@ new Vue({
     window.removeEventListener("resize", this.onResize);
   },
   methods: {
+    async listartabelas() {
+      let tabelas = await eel.listar_tabelas("disci")();
+      this.tabelas = tabelas;
+    },
     onResize() {
       this.windowHeight = window.innerHeight;
     },
@@ -143,11 +155,19 @@ new Vue({
       }
       this.dialog = true;
     },
-    async carregarsemana() {
+    async carregarsemana(tabela) {
       try {
-        disciplinas = await eel.listar_documentos("Disciplinas")();
+        disciplinas = await eel.listar_documentos(tabela)();
         this.disciplinassemana = disciplinas;
         this.semana = true;
+        this.nometabela = tabela
+        await this.listartabelas();
+        this.alertar(
+          true,
+          `Encontradas ${disciplinas.length} disciplinas`,
+          "mdi-check-bold",
+          "info"
+        );
       } catch (e) {
         console.error(e);
       }
@@ -193,20 +213,24 @@ new Vue({
     async inserirdisciplinas() {
       this.camposDisciplina._id = this.camposDisciplina.codigo_conteudo;
 
-      if (this.validarcampos(this.camposDisciplina) == true) {
+      if (
+        this.validarcampos(this.camposDisciplina) == true &&
+        this.tabeladisciplina != ""
+      ) {
         let result = await eel.inserir_documento(
           this.camposDisciplina,
-          "Disciplinas"
+          this.tabeladisciplina.toUpperCase()
         )();
         if (result == true) {
           this.formularioinsercao = false;
-          await this.listardisciplinas();
+          await this.listardisciplinas(this.tabeladisciplina);
           this.alertar(
             true,
             "Disciplina inserida com sucesso",
             "mdi-check-bold",
             "success"
           );
+          await this.listartabelas();
         } else {
           this.alertar(
             true,
@@ -224,8 +248,8 @@ new Vue({
         );
       }
     },
-    async listardisciplinas() {
-      let disciplinas = await eel.listar_documentos("Disciplinas")();
+    async listardisciplinas(tabela) {
+      let disciplinas = await eel.listar_documentos(tabela)();
       this.listadisciplinas = disciplinas.reverse();
       this.dialoglistadisciplinas = true;
     },
@@ -311,6 +335,9 @@ new Vue({
         );
       }
     },
+    async selecionartabela() {
+      await this.carregarsemana(this.nometabela)();
+    }
   },
   watch: {
     logVideos: function () {
@@ -329,7 +356,7 @@ new Vue({
     async titulosemana() {
       this.videos = [];
       let titulosem = this.titulosemana.toUpperCase();
-      console.log(titulosem);
+      // console.log(titulosem);
       let v = await eel.listar_documentos(titulosem)();
       if (v.length > 0) {
         this.videos = v;
@@ -338,9 +365,9 @@ new Vue({
           true,
           `Foram encontrados ${v.length} frames cadastrados em ${titulosem}`,
           "mdi-code-tags",
-          "success"
+          "info"
         );
       }
-    },
-  },
+    }
+  }
 });

@@ -245,7 +245,9 @@
                 <v-card>
 
                   <v-toolbar flat color="#762051" dark>
-                    <v-icon large left>mdi-file-plus</v-icon>Cadastrar disciplina
+                    <v-combobox append-icon="mdi-file-plus" v-model="tabeladisciplina" filled color="#762051" dark
+                      placeholder="DIGITE O NOME DA TABELA" clearable hide-details loading="#f8f8f8" flat
+                      :items="tabelas" class="text-h6 pa-0"></v-combobox>
                   </v-toolbar>
 
                   <v-card-text>
@@ -310,9 +312,17 @@
                   <v-icon left>mdi-file-plus</v-icon>
                   Cadastrar disciplina
                 </v-btn>
+
               </v-toolbar>
 
               <!-- INFO DISCIPLINAS -->
+              <v-banner app single-line color="#762051" ripple>
+                <v-card tile>
+                  <v-tabs background-color="#762051" center-active dark>
+                    <v-tab v-for="tabela in tabelas" :key="tabela" @click="listardisciplinas(tabela)">{{tabela}}</v-tab>
+                  </v-tabs>
+                </v-card>
+              </v-banner>
               <v-banner app single-line color="white" ripple>
                 <v-icon color="#762051" slot="icon" size="36">
                   mdi-information
@@ -367,11 +377,16 @@
                 </v-btn>
                 <v-toolbar-title>Inserir frames da semana</v-toolbar-title>
                 <v-spacer></v-spacer>
+                <v-col cols="3">
+                  <v-select v-model="nometabela" @change="selecionartabela()" :items="tabelas" menu-props="auto"
+                    :label="nometabela" hide-details prepend-icon="mdi-file-import-outline" single-line></v-select>
+                </v-col>
               </v-toolbar>
 
               <v-banner app single-line color="#762051" ripple>
-                <v-text-field v-model="titulosemana" filled color="#762051" dark placeholder="DIGITE A SEMANA AQUI"
-                  hide-details loading="#f8f8f8" flat class="text-h4 pa-0"></v-text-field>
+                <v-combobox append-icon="mdi-calendar-week" v-model="titulosemana" filled color="#762051"
+                  :items="semanas" dark placeholder="DIGITE A SEMANA AQUI" clearable loading="#f8f8f8" flat hide-details
+                  class="text-h4 pa-0"></v-combobox>
               </v-banner>
 
               <v-carousel :continuous="false" hide-delimiters progress progress-color="#762051"
@@ -479,11 +494,12 @@
               <v-spacer></v-spacer>
 
               <!-- MENU -->
-              <v-btn v-if="menu" @click="carregarsemana()" depressed dark large color="#762051">
+              <v-btn v-if="menu && tabelas.length > 0" @click="carregarsemana(tabelas[0])" depressed dark large
+                color="#762051">
                 <v-icon left>mdi-iframe</v-icon>
                 FRAMES
               </v-btn>
-              <v-btn v-if="menu" @click="listardisciplinas()" depressed dark large color="#762051">
+              <v-btn v-if="menu" @click="listardisciplinas(tabelas[0])" depressed dark large color="#762051">
                 <v-icon left>mdi-file</v-icon>
                 Disciplinas
               </v-btn>
@@ -596,7 +612,9 @@
           </v-dialog>
           <!-- DIALOGO DE CONFIG DE DISCIPLINAS -->
 
+          <!-- CONFIGURACOES -->
 
+          <!-- CONFIGURACOES -->
 
 
         </v-container>
@@ -623,9 +641,14 @@
       color: #5B525E;
     }
 
-    .list-enter-active,
+
     .list-leave-active {
+      transition: all 0.1s;
+    }
+
+    .list-enter-active {
       transition: all 1s;
+
     }
 
     .list-enter
@@ -640,6 +663,10 @@
       opacity: 0;
       transform: translateY(-30px);
     }
+
+    /* .list-leave-active {
+      position: absolute;
+    } */
 
     .v-card--reveal {
       align-items: center;

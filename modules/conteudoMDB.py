@@ -1,8 +1,9 @@
 from classes.ConteudoMDB import ConteudoMDB
 import eel
 
+
 def inserir(document, tabela, muitos=False):
-    
+
     inserirD = ConteudoMDB("AutoSEI")
     inserirD.tabela(tabela)
     result = inserirD.insert(document, muitos)
@@ -11,13 +12,14 @@ def inserir(document, tabela, muitos=False):
         print("Inserido com sucesso!")
     else:
         print("Registro já existe!")
-    
+
     eel.loginserirdisciplina(result)
 
     return result
-    
+
+
 def listartudo(tabela):
-    
+
     listarD = ConteudoMDB("AutoSEI")
     listarD.tabela(tabela)
     result = listarD.find_all()
@@ -31,10 +33,16 @@ def listartudo(tabela):
             disciplinas.append(r)
         print(disciplinas)
         return disciplinas
-    
+
+
 def remover(tabela, documento):
     removerD = ConteudoMDB("AutoSEI")
     removerD.tabela(tabela)
     result = removerD.remove(documento)
-    return result 
-    
+    return result
+
+
+def listar_tbs(nome):
+    listar = ConteudoMDB("AutoSEI")
+    result = listar.list_tables(nome)
+    return result

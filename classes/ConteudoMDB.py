@@ -11,13 +11,10 @@ class ConteudoMDB:
         self.table = None
     # Retorna um array
 
-    def list_tables(self):
-        tabelas = []
-        lista = self.banco.list_collections()
-        for l in lista:
-            nome = l["name"].replace("_", " ")
-            tabelas.append(nome)
-        return tabelas
+    def list_tables(self, nome=""):
+        filter = {"name": {"$regex": f".*{nome}", "$options": 'i'}}
+        lista = self.banco.list_collection_names(filter=filter)
+        return [l.replace("_", " ") for l in lista]
 
     def tabela(self, tabela):
         tabela = tabela.replace(" ", "_")
@@ -56,10 +53,9 @@ class ConteudoMDB:
         return count
 
     def remove(self, document):
-            q = self.table.delete_one(document)
-            result = q.deleted_count
-            return result
-
+        q = self.table.delete_one(document)
+        result = q.deleted_count
+        return result
 
 
 # disciplina = {
@@ -91,6 +87,6 @@ videos = [{
 # print(conteudo_mdb.remove(frame))
 # conteudo_mdb.insert(videos, True)
 # conteudo_mdb.find_all()
-# lista = conteudo_mdb.list_tables()
+# lista = conteudo_mdb.list_tables("disci")
 # print(lista)
 # print(conteudo_mdb.find_one(1))
