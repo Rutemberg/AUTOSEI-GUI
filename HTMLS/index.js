@@ -160,7 +160,7 @@ new Vue({
         disciplinas = await eel.listar_documentos(tabela)();
         this.disciplinassemana = disciplinas;
         this.semana = true;
-        this.nometabela = tabela
+        this.nometabela = tabela;
         await this.listartabelas();
         this.alertar(
           true,
@@ -320,6 +320,8 @@ new Vue({
           if (v.length > 0) {
             this.videos = v;
           }
+          let semana = await eel.listar_tabelas("semana")();
+          this.semanas = semana.reverse();
         } else {
           this.alertar(true, "Frame já cadastrado", "mdi-alert", "error");
         }
@@ -337,7 +339,7 @@ new Vue({
     },
     async selecionartabela() {
       await this.carregarsemana(this.nometabela)();
-    }
+    },
   },
   watch: {
     logVideos: function () {
@@ -368,6 +370,6 @@ new Vue({
           "info"
         );
       }
-    }
-  }
+    },
+  },
 });
