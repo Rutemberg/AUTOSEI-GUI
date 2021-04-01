@@ -316,7 +316,7 @@
               </v-toolbar>
 
               <!-- INFO DISCIPLINAS -->
-              <v-banner app single-line color="#762051" ripple>
+              <v-banner v-if="tabelas.length > 0" app single-line color="#762051" ripple>
                 <v-card tile>
                   <v-tabs background-color="#762051" center-active dark>
                     <v-tab v-for="tabela in tabelas" :key="tabela" @click="listardisciplinas(tabela)">{{tabela}}</v-tab>

@@ -47,42 +47,77 @@ class ConteudoMDB:
             # print("Sem registros")
             return 0
 
-    def find_one(self, codigo):
-        query = self.table
-        count = query.find_one({"codigo_disciplina": codigo})
-        return count
+    def find_in_week(self, semana, query):
+        tabela = self.banco[f"{semana}"]
+        count = tabela.estimated_document_count()
+        if count > 0:
+            result = tabela.find(query)
+            return result
+        else:
+            # print("Sem registros")
+            return 0
 
     def remove(self, document):
         q = self.table.delete_one(document)
         result = q.deleted_count
         return result
 
+    def montar_videos_da_semana(self, semana):
+        semana = semana.replace(" ", "_")
+        disciplinas = []
+        resultD = self.find_all()
+        if resultD != 0:
+            for r in resultD:
+                disciplina = {"codigo_disciplina": r["codigo_disciplina"],
+                              "nome_disciplina": r["nome_disciplina"],
+                              "professor": r["professor"],
+                              "codigo_conteudo": r["codigo_conteudo"],
+                              "videos": []}
 
-# disciplina = {
-#     "_id": 768,
-#     "codigo_disciplina": 447,
-#     "nome_disciplina": "Direito Processual Civil III",
-#     "professor": "Thiago",
-#     "codigo_conteudo": 768
-# }
-videos = [{
-    "codigo_conteudo": 6,
-    "titulo": "teste",
-    "frame": 123456789,
-    "info": "DISNPONIVEL PARA INSERCAO"
-},
+                resultV = self.find_in_week(
+                    semana, {"codigo_conteudo": r["codigo_conteudo"]})
+                if resultV != 0:
+                    for v in resultV:
+                        frames = {
+                            "titulo": v["titulo"],
+                            "frame": v["frame"]
+                        }
+                        disciplina["videos"].append(frames)
+
+                disciplinas.append(disciplina)
+
+        return disciplinas
+
+
+disciplinas = [
     {
-    "codigo_conteudo": 6,
-    "titulo": "teste II",
-    "frame": 654655658,
-    "info": "DISNPONIVEL PARA INSERCAO"
-
-}
+        "_id": 6,
+        "codigo_disciplina": 94,
+        "nome_disciplina": "Ciência Política",
+        "professor": "Joao",
+        "codigo_conteudo": 6
+    },
+    {
+        "_id": 7,
+        "codigo_disciplina": 94,
+        "nome_disciplina": "Ciência Política II",
+        "professor": "Paula",
+        "codigo_conteudo": 7
+    },
+    {
+        "_id": 8,
+        "codigo_disciplina": 1286,
+        "nome_disciplina": "Filosofia Geral e Jurídica",
+        "professor": "Mauricio",
+        "codigo_conteudo": 8
+    }
 ]
 
 
 # conteudo_mdb = ConteudoMDB("AutoSEI")
-# conteudo_mdb.tabela("SEMANA 01")
+# conteudo_mdb.tabela("DISCIPLINAS TESTE")
+# print(conteudo_mdb.montar_videos_da_semana("SEMANA TESTE"))
+# conteudo_mdb.insert(disciplinas, True)
 # frame = {"frame": "123"}
 # print(conteudo_mdb.remove(frame))
 # conteudo_mdb.insert(videos, True)

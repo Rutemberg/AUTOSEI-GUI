@@ -223,7 +223,7 @@ new Vue({
         )();
         if (result == true) {
           this.formularioinsercao = false;
-          await this.listardisciplinas(this.tabeladisciplina);
+          await this.listardisciplinas(this.tabeladisciplina.toUpperCase())
           this.alertar(
             true,
             "Disciplina inserida com sucesso",
@@ -231,6 +231,7 @@ new Vue({
             "success"
           );
           await this.listartabelas();
+
         } else {
           this.alertar(
             true,
@@ -248,7 +249,7 @@ new Vue({
         );
       }
     },
-    async listardisciplinas(tabela) {
+    async listardisciplinas(tabela="disci") {
       let disciplinas = await eel.listar_documentos(tabela)();
       this.listadisciplinas = disciplinas.reverse();
       this.dialoglistadisciplinas = true;
