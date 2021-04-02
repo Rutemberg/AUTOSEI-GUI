@@ -66,9 +66,14 @@ new Vue({
   el: "#app",
   vuetify: new Vuetify(),
   data: {
+    bancos: [],
+    bancoselecionado: "",
+    nomebanco: "",
     nometabela: "",
     tabelas: [],
     semanas: [],
+    nomesemana: "",
+    nomedisciplina: "",
     windowHeight: window.innerHeight,
     alert: {
       on: false,
@@ -91,6 +96,7 @@ new Vue({
     listadisciplinas: [],
     mensagemDisciplina,
     formularioinsercao: false,
+    formulariobanco: false,
     dialoglistadisciplinas: false,
     tabeladisciplina: "",
     camposDisciplina: {
@@ -100,9 +106,12 @@ new Vue({
       codigo_conteudo: 6,
       professor: "Joao",
     },
+    dialoginsercao: false,
+    dialogbanco: false,
     dialog: false,
     dialogRelatorio: false,
     fab: false,
+    fab2: false,
     titulo: false,
     power: 0,
     appbar: false,
@@ -119,29 +128,63 @@ new Vue({
     dadosrelatorio: dadosr,
   },
   async mounted() {
-    try {
-      let configuracoes = await eel.carregar_configuracoes()();
-      let semanas = await eel.listar_tabelas("semana")();
-      await this.listartabelas();
-      this.semanas = semanas.reverse();
-      this.configuracoes = configuracoes;
-      // console.log(this.tabelas);
-    } catch (e) {
-      console.error(e);
-    }
+    let bancos = await eel.listar_bancos_de_dados()();
+    this.bancos = bancos;
     var main = document.getElementById("app");
     main.style.display = "block";
     this.titulo = true;
     this.appbar = true;
     window.addEventListener("resize", this.onResize);
+    setTimeout(() => {
+      this.dialogbanco = true;
+    }, 500);
   },
   beforeDestroy() {
     window.removeEventListener("resize", this.onResize);
   },
   methods: {
+    fechardialoginsercao() {
+      this.dialoginsercao = false;
+      this.disciplinas = [];
+    },
+    async carregarbanco(banco) {
+      this.bancoselecionado = banco;
+      let configuracoes = await eel.carregar_configuracoes()();
+      let semanas = await eel.listar_tabelas(this.bancoselecionado, "semana")();
+      await this.listartabelas();
+      this.semanas = semanas.reverse();
+      this.configuracoes = configuracoes;
+      this.dialogbanco = false;
+    },
     async listartabelas() {
-      let tabelas = await eel.listar_tabelas("disci")();
+      let tabelas = await eel.listar_tabelas(this.bancoselecionado, "disci")();
       this.tabelas = tabelas;
+    },
+    async salvarbanco() {
+      if (this.nomebanco != "") {
+        let banco = await eel.criar_banco(this.nomebanco)();
+
+        if (banco == true) {
+          let bancos = await eel.listar_bancos_de_dados()();
+          this.bancos = bancos;
+          this.alertar(
+            true,
+            "Banco inserido com sucesso!",
+            "mdi-database-check",
+            "success"
+          );
+          this.formulariobanco = false;
+          this.nomebanco = "";
+          this.dialogbanco = true;
+        }
+      } else {
+        this.alertar(
+          true,
+          "Nome do banco vazio",
+          "mdi-database-remove",
+          "error"
+        );
+      }
     },
     onResize() {
       this.windowHeight = window.innerHeight;
@@ -157,7 +200,10 @@ new Vue({
     },
     async carregarsemana(tabela) {
       try {
-        disciplinas = await eel.listar_documentos(tabela)();
+        disciplinas = await eel.listar_documentos(
+          this.bancoselecionado,
+          tabela
+        )();
         this.disciplinassemana = disciplinas;
         this.semana = true;
         this.nometabela = tabela;
@@ -187,9 +233,9 @@ new Vue({
     contarvideos: function (arr, faltam) {
       qnt = 0;
       arr.forEach((a) => {
-        if (a.videos[0].frame != "" && faltam == false) {
+        if (a.videos.length > "" && faltam == false) {
           qnt += a.videos.length;
-        } else if (a.videos[0].frame == "" && faltam == true) {
+        } else if (a.videos.length == 0 && faltam == true) {
           qnt += 1;
         }
       });
@@ -218,12 +264,13 @@ new Vue({
         this.tabeladisciplina != ""
       ) {
         let result = await eel.inserir_documento(
+          this.bancoselecionado,
           this.camposDisciplina,
           this.tabeladisciplina.toUpperCase()
         )();
         if (result == true) {
           this.formularioinsercao = false;
-          await this.listardisciplinas(this.tabeladisciplina.toUpperCase())
+          await this.listardisciplinas(this.tabeladisciplina.toUpperCase());
           this.alertar(
             true,
             "Disciplina inserida com sucesso",
@@ -231,7 +278,6 @@ new Vue({
             "success"
           );
           await this.listartabelas();
-
         } else {
           this.alertar(
             true,
@@ -249,13 +295,20 @@ new Vue({
         );
       }
     },
-    async listardisciplinas(tabela="disci") {
-      let disciplinas = await eel.listar_documentos(tabela)();
+    async listardisciplinas(tabela = "disci") {
+      let disciplinas = await eel.listar_documentos(
+        this.bancoselecionado,
+        tabela
+      )();
       this.listadisciplinas = disciplinas.reverse();
       this.dialoglistadisciplinas = true;
     },
     async deletar(document) {
-      let d = await eel.remover_documentos(this.titulosemana, document)();
+      let d = await eel.remover_documentos(
+        this.bancoselecionado,
+        this.titulosemana,
+        document
+      )();
 
       if (d > 0) {
         this.alertar(
@@ -264,9 +317,14 @@ new Vue({
           "mdi-code-tags",
           "success"
         );
-        let v = await eel.listar_documentos(this.titulosemana)();
+        let v = await eel.listar_documentos(
+          this.bancoselecionado,
+          this.titulosemana
+        )();
         if (v.length > 0) {
           this.videos = v;
+        } else {
+          this.videos = [];
         }
       } else {
         this.alertar(true, "Frame nao encontrado", "mdi-code-tags", "error");
@@ -307,8 +365,9 @@ new Vue({
         this.videoparacadastrar.info = "DISPONIVEL PARA INSERCAO";
 
         let result = await eel.inserir_documento(
+          this.bancoselecionado,
           this.videoparacadastrar,
-          this.titulosemana
+          this.titulosemana.toUpperCase()
         )();
         if (result == true) {
           this.alertar(
@@ -317,11 +376,17 @@ new Vue({
             "mdi-check-bold",
             "success"
           );
-          let v = await eel.listar_documentos(this.titulosemana)();
+          let v = await eel.listar_documentos(
+            this.bancoselecionado,
+            this.titulosemana
+          )();
           if (v.length > 0) {
             this.videos = v;
           }
-          let semana = await eel.listar_tabelas("semana")();
+          let semana = await eel.listar_tabelas(
+            this.bancoselecionado,
+            "semana"
+          )();
           this.semanas = semana.reverse();
         } else {
           this.alertar(true, "Frame já cadastrado", "mdi-alert", "error");
@@ -338,6 +403,26 @@ new Vue({
         );
       }
     },
+    async montarsemanaparainsercao(semana) {
+      if (this.nomedisciplina != "") {
+        this.nomesemana = semana;
+
+        let disciplinas = await eel.carregar_disciplinas_para_insercao(
+          this.bancoselecionado,
+          this.nomedisciplina,
+          this.nomesemana
+        )();
+        this.disciplinas = disciplinas;
+        console.log(this.disciplinas);
+      } else {
+        this.alertar(
+          true,
+          "Escolha o grupo de disciplinas a serem inseridas",
+          "mdi-alert",
+          "warning"
+        );
+      }
+    },
     async selecionartabela() {
       await this.carregarsemana(this.nometabela)();
     },
@@ -346,6 +431,12 @@ new Vue({
     logVideos: function () {
       scrolltobottom();
     },
+    // nomesemana: function () {
+    //   console.log(this.nomesemana);
+    // },
+    // nomedisciplina: function () {
+    //   console.log(this.nomedisciplina);
+    // },
     logDisciplinas: function () {
       scrolltobottom();
       let pctgatual = this.logDisciplinas.length;
@@ -360,7 +451,7 @@ new Vue({
       this.videos = [];
       let titulosem = this.titulosemana.toUpperCase();
       // console.log(titulosem);
-      let v = await eel.listar_documentos(titulosem)();
+      let v = await eel.listar_documentos(this.bancoselecionado, titulosem)();
       if (v.length > 0) {
         this.videos = v;
         this.vervideos = true;

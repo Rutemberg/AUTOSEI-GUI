@@ -16,13 +16,97 @@
   <div id="app" style="display: none;">
     <v-app>
       <v-main>
-        <v-container fill-height fluid>
+        <v-container fill-height fluid style="background-color: #f8f8f8;">
+
+          <!-- MENU SUPERIOR -->
+          <transition name="list">
+            <v-app-bar v-if="appbar" height="45" absolute top tile flat>
+              <v-spacer></v-spacer>
+              <v-speed-dial v-model="fab2" direction="bottom" transition="scroll-x-reverse-transition">
+                <template v-slot:activator>
+                  <v-btn v-model="fab2" text>
+                    <v-icon color="#762051" left v-if="fab2">
+                      mdi-close
+                    </v-icon>
+                    <v-icon color="#762051" left v-else>
+                      mdi-database
+                    </v-icon>
+                    {{bancoselecionado}}
+                  </v-btn>
+                </template>
+                <v-tooltip left>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn v-bind="attrs" v-on="on" fab dark color="#762051" @click="dialogbanco = true">
+                      <v-icon>mdi-database-refresh</v-icon>
+                    </v-btn>
+                  </template>
+                  <span>Selecionar banco</span>
+                </v-tooltip>
+                <v-tooltip left>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn v-bind="attrs" v-on="on" fab dark color="#762051" @click="formulariobanco = true">
+                      <v-icon>mdi-database-plus</v-icon>
+                    </v-btn>
+                  </template>
+                  <span>Criar banco</span>
+                </v-tooltip>
+
+              </v-speed-dial>
+              <v-btn text>
+                <v-icon color="#762051">mdi-dots-vertical</v-icon>
+              </v-btn>
+            </v-app-bar>
+          </transition>
+          <!-- MENU SUPERIOR -->
+
+          <!-- FORMULARIO DE CADASTRO DO BANCO -->
+          <v-dialog light v-model="formulariobanco" overlay-color="#762051" overlay-opacity="0.25" persistent
+            width="500px">
+            <v-card>
+              <v-toolbar flat>
+                <v-text-field v-model="nomebanco" light append-icon="mdi-database" filled color="#762051"
+                  placeholder="DIGITE O NOME DO BANCO" clearable hide-details loading="#762051" flat
+                  class="text-h6 pa-0" @keyup.enter="salvarbanco()"></v-text-field dark>
+              </v-toolbar>
+
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="#762051" text @click="formulariobanco = false">
+                  Fechar
+                </v-btn>
+                <v-btn color="#762051" text @click="salvarbanco()">
+                  Salvar
+                </v-btn>
+              </v-card-actions>
+              <!-- {{mensagemDisciplina}} -->
+            </v-card>
+          </v-dialog>
+          <!-- FORMULARIO DE CADASTRO DO BANCO -->
+
+          <!-- SELECIONAR BANCO DE DADOS -->
+          <v-dialog v-model="dialogbanco" persistent overlay-opacity="0">
+            <v-card max-height="400" dense class="d-flex flex-column" justify="center" align="center">
+
+              <v-banner outlined="false" color="white" app>
+                <h6 class="text-h6" id="titulo"><b style="color:#762051;">Selecione o banco</b></h6>
+              </v-banner>
+
+              <v-card tile flat class="d-flex flex-wrap justify-center flex my-2">
+                <v-card @click="carregarbanco(banco)" width="200" style="cursor: pointer;"
+                  class="d-flex justify-center ma-5" v-for="banco in bancos" ripple>
+                  <v-card-title>
+                    <v-icon left color="#762051">mdi-database</v-icon>
+                    {{banco}}
+                  </v-card-title>
+                </v-card>
+              </v-card>
+
+            </v-card>
+          </v-dialog>
+          <!-- SELECIONAR BANCO DE DADOS -->
+
 
           <!-- ALERTA -->
-
-          <!-- <v-alert v-model="alert.on" dense outlined :type="alert.type" transition="fade-transition" dismissible>
-            {{alert.message}}
-          </v-alert> -->
 
           <v-snackbar v-model="alert.on" :color="alert.color">
             <v-icon left>{{alert.type}}</v-icon>
@@ -112,7 +196,7 @@
 
               <!-- LOGOTIPO -->
               <transition name="list">
-                <v-banner outlined="false" style="z-index: 100;" app single-line color="white" v-if="titulo">
+                <v-banner outlined="false" style="z-index: 100;" app single-line color="transparent" v-if="titulo">
                   <h1 class="text-h2" id="titulo"><b style="color: #762051;">AUTO</b>SEI </h1>
                 </v-banner>
               </transition>
@@ -319,7 +403,8 @@
               <v-banner v-if="tabelas.length > 0" app single-line color="#762051" ripple>
                 <v-card tile>
                   <v-tabs background-color="#762051" center-active dark>
-                    <v-tab v-for="tabela in tabelas" :key="tabela" @click="listardisciplinas(tabela)">{{tabela}}</v-tab>
+                    <v-tab v-for="tabela in tabelas" :key="tabela" @click="listardisciplinas(tabela)">{{tabela}}
+                    </v-tab>
                   </v-tabs>
                 </v-card>
               </v-banner>
@@ -405,7 +490,8 @@
                             <v-list-item-title class="headline mb-5">
                               {{disciplinas.nome_disciplina}}
                             </v-list-item-title>
-                            <v-list-tile-sub-title class="v-card__subtitle">Digite o titulo e o frame e aperte no botao
+                            <v-list-tile-sub-title class="v-card__subtitle">Digite o titulo e o frame e aperte no
+                              botao
                               ou aperte a tecla
                               <strong>enter</strong>
                             </v-list-tile-sub-title>
@@ -517,7 +603,7 @@
                 </template>
                 <v-tooltip left>
                   <template v-slot:activator="{ on, attrs }">
-                    <v-btn v-bind="attrs" v-on="on" fab dark color="#762051">
+                    <v-btn v-bind="attrs" v-on="on" fab dark color="#762051" @click="dialoginsercao = true">
                       <v-icon>mdi-play-box</v-icon>
                     </v-btn>
                   </template>
@@ -552,7 +638,7 @@
 
 
           <!-- DIALOGO DE CONFIG DE DISCIPLINAS -->
-          <v-dialog v-model="dialog" fullscreen hide-overlay transition="dialog-bottom-transition">
+          <!-- <v-dialog v-model="dialog" fullscreen hide-overlay transition="dialog-bottom-transition">
 
             <v-card color="#f8f8f8">
 
@@ -566,10 +652,10 @@
                   <v-icon left>mdi-play</v-icon>
                   iniciar
                 </v-btn>
-              </v-toolbar>
+              </v-toolbar> -->
 
-              <!-- INFO DISCIPLINAS -->
-              <v-banner app single-line color="white" ripple>
+          <!-- INFO DISCIPLINAS -->
+          <!-- <v-banner app single-line color="white" ripple>
                 <v-icon color="#762051" slot="icon" size="36">
                   mdi-information
                 </v-icon>
@@ -578,11 +664,11 @@
                 Videos a serem processados: <strong>{{contarvideos(disciplinas,false)}}</strong>
                 <br>
                 Disciplinas sem videos: <strong>{{contarvideos(disciplinas,true)}}</strong>
-              </v-banner>
-              <!-- INFO DISCIPLINAS -->
+              </v-banner> -->
+          <!-- INFO DISCIPLINAS -->
 
 
-              <v-card color="#f8f8f8" elevation="0" class="d-flex flex-wrap justify-center flex ma-10">
+          <!-- <v-card color="#f8f8f8" elevation="0" class="d-flex flex-wrap justify-center flex ma-10">
                 <v-card class="mx-auto mb-5" width="500" v-for="disciplina in disciplinas"
                   :key="disciplina.codigo_conteudo">
                   <v-card-title primary-title>
@@ -609,8 +695,93 @@
               </v-card>
 
             </v-card>
-          </v-dialog>
+          </v-dialog> -->
           <!-- DIALOGO DE CONFIG DE DISCIPLINAS -->
+
+
+          <!-- DIALOGO DE INSERCAO -->
+          <v-dialog v-model="dialoginsercao" fullscreen hide-overlay transition="dialog-bottom-transition">
+
+            <v-card color="#f8f8f8">
+
+              <!-- SELECAO DA DISCIPLINAS -->
+              <v-toolbar dark color="#762051">
+                <v-btn icon dark @click="fechardialoginsercao()">
+                  <v-icon>mdi-close</v-icon>
+                </v-btn>
+                <v-col cols="3">
+                  <v-select v-model="nomedisciplina" :items="tabelas" placeholder="Disciplinas" menu-props="auto"
+                    hide-details prepend-icon="mdi-file-import-outline" single-line></v-select>
+                </v-col>
+                <v-spacer></v-spacer>
+                <v-btn rounded dark color="transparent" elevation="0" @click="iniciar('Sim')">
+                  <v-icon left>mdi-play</v-icon>
+                  iniciar
+                </v-btn>
+              </v-toolbar>
+              <!-- SELECAO DA DISCIPLINAS -->
+
+              <!-- SELECAO DA SEMANA -->
+              <v-banner v-if="semanas.length > 0" app single-line color="#762051" ripple>
+                <v-card tile>
+                  <v-tabs background-color="#762051" center-active dark>
+                    <v-tab v-for="semana in semanas" :key="semana" @click="montarsemanaparainsercao(semana)">{{semana}}
+                    </v-tab>
+                  </v-tabs>
+                </v-card>
+              </v-banner>
+              <!-- SELECAO DA SEMANA -->
+
+
+              <!-- INFO DISCIPLINAS -->
+              <v-banner app single-line color="white" ripple>
+                <v-icon color="#762051" slot="icon" size="36">
+                  mdi-information
+                </v-icon>
+                Disciplinas encontradas: <strong>{{contar(disciplinas)}}</strong>
+                <br>
+                Videos a serem processados: <strong>{{contarvideos(disciplinas,false)}}</strong>
+                <br>
+                Disciplinas sem videos: <strong>{{contarvideos(disciplinas,true)}}</strong>
+              </v-banner>
+              <!-- INFO DISCIPLINAS -->
+
+              <!-- DISCIPLINAS MONTADAS -->
+              <v-card color="#f8f8f8" elevation="0" class="d-flex flex-wrap justify-center flex ma-10">
+                <transition-group name="list" class="d-flex flex-wrap justify-center flex ma-10">
+                  <v-card class="mx-auto mb-5" width="500" v-for="disciplina in disciplinas"
+                    :key="disciplina.codigo_conteudo">
+                    <v-card-title primary-title>
+                      {{ disciplina.nome_disciplina }}
+                    </v-card-title>
+                    <v-card-subtitle>
+                      {{ disciplina.professor }}
+                    </v-card-subtitle>
+                    <v-card-text>
+                      <v-chip v-if="disciplina.videos.length > 0">
+                        <v-avatar left>
+                          {{ contar(disciplina.videos) }}
+                        </v-avatar>
+                        Videos
+                      </v-chip>
+                      <v-chip v-else color="error">
+                        <v-avatar left>
+                          0
+                        </v-avatar>
+                        Videos
+                      </v-chip>
+                    </v-card-text>
+                  </v-card>
+                </transition-group>
+              </v-card>
+              <!-- DISCIPLINAS MONTADAS -->
+
+            </v-card>
+          </v-dialog>
+
+          <!-- DIALOGO DE INSERCAO -->
+
+
 
           <!-- CONFIGURACOES -->
 

@@ -15,36 +15,54 @@ semana = path + "semana.json"
 configuracoes = abrir_arquivo_json(config)
 disciplinas = abrir_arquivo_json(semana)
 
-@eel.expose
-def inserir_documento(document, tabela, muitos=False):
-    return inserir(document, tabela, muitos)
-    
-@eel.expose
-def listar_documentos(tabela="Nenhuma"):
-    return listartudo(tabela)
-    
-@eel.expose
-def remover_documentos(tabela, document):
-    return remover(tabela, document)
 
 @eel.expose
-def listar_tabelas(nome):
-    return listar_tbs(nome)
+def inserir_documento(banco, document, tabela, muitos=False):
+    return inserir(banco, document, tabela, muitos)
 
-    
+
+@eel.expose
+def listar_documentos(banco, tabela="Nenhuma"):
+    return listartudo(banco, tabela)
+
+
+@eel.expose
+def listar_bancos_de_dados():
+    return listar_dbs()
+
+
+@eel.expose
+def remover_documentos(banco, tabela, document):
+    return remover(banco, tabela, document)
+
+
+@eel.expose
+def listar_tabelas(banco, nome):
+    return listar_tbs(banco, nome)
+
+
+@eel.expose
+def criar_banco(nome):
+    return criar_db(nome)
+
+@eel.expose
+def carregar_disciplinas_para_insercao(banco, grupo_disciplinas, semana_a_ser_inserida):
+    return criar_semana_insercao(banco, grupo_disciplinas, semana_a_ser_inserida)
+
+
 @eel.expose
 def carregar_disciplinas():
     return disciplinas
 
+
 @eel.expose
 def carregar_configuracoes():
     return configuracoes
+
 
 @eel.expose
 def insercao(opcao):
     iniciar_insercao(disciplinas, configuracoes, opcao)
 
 
-
-
-eel.start('index.html')  
+eel.start('index.html')

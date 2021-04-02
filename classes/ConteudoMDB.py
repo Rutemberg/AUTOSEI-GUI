@@ -3,7 +3,7 @@ import pymongo
 
 class ConteudoMDB:
 
-    def __init__(self, banco):
+    def __init__(self, banco="Default"):
 
         self.client = pymongo.MongoClient(
             f"mongodb://novousuario:ggwaE2eZPpPAGAEx@cluster0-shard-00-00.2if2x.mongodb.net:27017,cluster0-shard-00-01.2if2x.mongodb.net:27017,cluster0-shard-00-02.2if2x.mongodb.net:27017/{banco}?ssl=true&replicaSet=atlas-sara4b-shard-0&authSource=admin&retryWrites=true&w=majority")
@@ -16,10 +16,18 @@ class ConteudoMDB:
         lista = self.banco.list_collection_names(filter=filter)
         return [l.replace("_", " ") for l in lista]
 
+    def list_dbs(self):
+        lista = self.client.list_database_names()
+        lista = [l for l in lista if not("admin" in l) and not("local" in l)]
+        return lista
+
     def tabela(self, tabela):
         tabela = tabela.replace(" ", "_")
         table = self.banco[f"{tabela}"]
         self.table = table
+
+    # def deletar_tabela_criada(self):
+    #     self.table.drop()
 
     def insert(self, document, muitos=False):
         try:
@@ -113,8 +121,12 @@ disciplinas = [
     }
 ]
 
-
-# conteudo_mdb = ConteudoMDB("AutoSEI")
+# nome = "Rutemberg"
+# conteudo_mdb = ConteudoMDB()
+# conteudo_mdb.tabela("bancocriado")
+# conteudo_mdb.insert({"nome": nome})
+# print(conteudo_mdb.list_dbs())
+# conteudo_mdb.deletar_tabela_criada()
 # conteudo_mdb.tabela("DISCIPLINAS TESTE")
 # print(conteudo_mdb.montar_videos_da_semana("SEMANA TESTE"))
 # conteudo_mdb.insert(disciplinas, True)
