@@ -52,12 +52,71 @@
                 </v-tooltip>
 
               </v-speed-dial>
-              <v-btn text>
+              <v-btn text @click="dialogconfiguracoes = true">
                 <v-icon color="#762051">mdi-dots-vertical</v-icon>
               </v-btn>
             </v-app-bar>
           </transition>
           <!-- MENU SUPERIOR -->
+
+          <!-- CONFIGURACOES -->
+          <v-dialog v-model="dialogconfiguracoes" overlay-color="#762051" overlay-opacity="0.25" persistent
+            max-width="600px">
+            <v-card>
+
+              <v-toolbar flat color="#762051" dark>
+                <v-icon left>mdi-dots-vertical</v-icon>
+                <b style="color: white;" id="titulo">Configurações para inserção</b>
+              </v-toolbar>
+
+              <v-card-text>
+                <v-container>
+                  <v-row>
+
+                    <v-col cols="12" sm="12" md="12">
+                      <v-text-field prepend-inner-icon="mdi-web" label="Site" v-model="camposconfiguracao.site"
+                        disabled>
+                      </v-text-field>
+                    </v-col>
+
+                    <v-col cols="12" sm="12" md="12">
+                      <v-text-field prepend-inner-icon="mdi-web" label="url de consulta conteudo" disabled
+                        v-model="camposconfiguracao.url_conteudo" persistent-hint></v-text-field>
+                    </v-col>
+
+                    <v-col cols="6" sm="6" md="6">
+                      <v-text-field prepend-inner-icon="mdi-account-circle-outline" label="Usuario do SEI"
+                        :disabled="disabled" v-model="camposconfiguracao.usuario" required>
+                      </v-text-field>
+                    </v-col>
+
+                    <v-col cols="6" sm="6" md="6">
+                      <v-text-field prepend-inner-icon="mdi-lock-outline" number label="Senha do SEI"
+                        :disabled="disabled" v-model="camposconfiguracao.senha" required>
+                      </v-text-field>
+                    </v-col>
+
+                  </v-row>
+                </v-container>
+              </v-card-text>
+
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="#762051" text @click="dialogconfiguracoes = false">
+                  Fechar
+                </v-btn>
+                <v-btn v-if="listaconfiguracoescadastradas.length == 0" color="#762051" text
+                  @click="inserirconfiguracoes()">
+                  Salvar
+                </v-btn>
+                <v-btn v-else color="#762051" text @click="removerconfiguracoes()">
+                  remover configuração
+                </v-btn>
+              </v-card-actions>
+              <!-- {{mensagemDisciplina}} -->
+            </v-card>
+          </v-dialog>
+          <!-- CONFIGURACOES -->
 
           <!-- FORMULARIO DE CADASTRO DO BANCO -->
           <v-dialog light v-model="formulariobanco" overlay-color="#762051" overlay-opacity="0.25" persistent
@@ -84,7 +143,7 @@
           <!-- FORMULARIO DE CADASTRO DO BANCO -->
 
           <!-- SELECIONAR BANCO DE DADOS -->
-          <v-dialog v-model="dialogbanco" persistent overlay-opacity="0">
+          <v-dialog v-if="bancos.length > 0" v-model="dialogbanco" persistent overlay-opacity="0">
             <v-card max-height="400" dense class="d-flex flex-column" justify="center" align="center">
 
               <v-banner outlined="false" color="white" app>
@@ -125,7 +184,8 @@
             <v-card>
 
               <v-toolbar flat color="#762051" dark>
-                <v-icon large left>mdi-check-bold</v-icon>Inserção finalizada com sucesso
+                <v-icon large left>mdi-check-bold</v-icon>
+                <b style="color: white;" id="titulo">Inserção finalizada com sucesso</b>
               </v-toolbar>
               <v-card-text>
                 <v-list v-for="dadosr in dadosrelatorio">
@@ -320,7 +380,7 @@
           <!-- CONTEUDO -->
 
 
-          <!-- FORMULARIO -->
+          <!-- FORMULARIO DE CADASTRO DE DISCIPLINA-->
 
           <template>
             <v-row justify="center">
@@ -339,24 +399,26 @@
                       <v-row>
 
                         <v-col cols="12" sm="12" md="12">
-                          <v-text-field label="Nome disciplina" v-model="camposDisciplina.nome_disciplina" required>
+                          <v-text-field prepend-inner-icon="mdi-file-document-edit-outline" label="Nome disciplina"
+                            color="#762051" v-model="camposDisciplina.nome_disciplina" required>
                           </v-text-field>
                         </v-col>
 
                         <v-col cols="12" sm="6" md="6">
-                          <v-text-field type="number" label="Código disciplina"
-                            v-model="camposDisciplina.codigo_disciplina" required>
+                          <v-text-field prepend-inner-icon="mdi-file-key-outline" type="number" color="#762051"
+                            label="Código disciplina" v-model="camposDisciplina.codigo_disciplina" required>
                           </v-text-field>
                         </v-col>
 
                         <v-col cols="12" sm="6" md="6">
-                          <v-text-field type="number" label="Codigo de conteudo"
-                            hint="Este codigo é importante, nao erre!" v-model="camposDisciplina.codigo_conteudo"
-                            persistent-hint required></v-text-field>
+                          <v-text-field prepend-inner-icon="mdi-file-key-outline" type="number" color="#762051"
+                            label="Codigo de conteudo" hint="Este codigo é importante, nao erre!"
+                            v-model="camposDisciplina.codigo_conteudo" persistent-hint required></v-text-field>
                         </v-col>
 
                         <v-col cols="12">
-                          <v-text-field number label="Nome do professor" v-model="camposDisciplina.professor" required>
+                          <v-text-field prepend-inner-icon="mdi-file-account-outline" number label="Nome do professor"
+                            color="#762051" v-model="camposDisciplina.professor" required>
                           </v-text-field>
                         </v-col>
 
@@ -431,7 +493,7 @@
                         </v-list-item-title>
                       </v-list-item-content>
 
-                      <v-list-item-avatar tile size="auto" class="display-2">{{disciplina.codigo_conteudo}}
+                      <v-list-item-avatar tile size="auto" class="display-1">{{disciplina.codigo_conteudo}}
                       </v-list-item-avatar>
                     </v-list-item>
 
@@ -496,12 +558,13 @@
                               <strong>enter</strong>
                             </v-list-tile-sub-title>
                             <v-col cols="10">
-                              <v-text-field v-on:keyup.enter="montarvideos(disciplinas.codigo_conteudo)"
-                                v-model="video.titulo" filled color="#762051" placeholder="Titulo do vídeo" hide-details
-                                flat class="text-h6 pa-0"></v-text-field>
+                              <v-text-field prepend-inner-icon="mdi-format-title"
+                                v-on:keyup.enter="montarvideos(disciplinas.codigo_conteudo)" v-model="video.titulo"
+                                filled color="#762051" placeholder="Titulo do vídeo" hide-details flat
+                                class="text-h6 pa-0"></v-text-field>
                             </v-col>
                             <v-col cols="10">
-                              <v-text-field type="number" v-model="video.frame"
+                              <v-text-field prepend-inner-icon="mdi-code-tags" type="number" v-model="video.frame"
                                 v-on:keyup.enter="montarvideos(disciplinas.codigo_conteudo)" filled color="#762051"
                                 placeholder="Código" hide-details flat class="text-h6 pa-0">
                               </v-text-field>
@@ -535,8 +598,13 @@
                                     </v-list-item-avatar>
 
                                     <v-list-item-content>
-                                      <v-list-item-title>{{video.titulo}}</v-list-item-title>
+                                      <v-list-item-title class="text-h6">{{video.titulo}}</v-list-item-title>
                                       <v-list-item-subtitle>{{video.frame}}</v-list-item-subtitle>
+                                      <div class="v-card__text">
+                                        <iframe :src="'https://player.vimeo.com/video/' + video.frame" width="426"
+                                          height="240" frameborder="0" allow="autoplay; fullscreen; picture-in-picture"
+                                          allowfullscreen></iframe>
+                                      </div>
                                     </v-list-item-content>
                                     <v-icon @click='deletar({"frame": video.frame})'>mdi-delete</v-icon>
                                   </v-list-item>
@@ -710,8 +778,9 @@
                   <v-icon>mdi-close</v-icon>
                 </v-btn>
                 <v-col cols="3">
-                  <v-select v-model="nomedisciplina" :items="tabelas" placeholder="Disciplinas" menu-props="auto"
-                    hide-details prepend-icon="mdi-file-import-outline" single-line></v-select>
+                  <v-select v-model="nomedisciplina" :items="tabelas" placeholder="Selecionar disciplinas"
+                    menu-props="auto" hide-details prepend-icon="mdi-file-import-outline" single-line
+                    @change="montarsemanaparainsercao(nomesemana)"></v-select>
                 </v-col>
                 <v-spacer></v-spacer>
                 <v-btn rounded dark color="transparent" elevation="0" @click="iniciar('Sim')">
@@ -747,30 +816,40 @@
               <!-- INFO DISCIPLINAS -->
 
               <!-- DISCIPLINAS MONTADAS -->
-              <v-card color="#f8f8f8" elevation="0" class="d-flex flex-wrap justify-center flex ma-10">
+              <v-card color="#f8f8f8" elevation="0">
                 <transition-group name="list" class="d-flex flex-wrap justify-center flex ma-10">
                   <v-card class="mx-auto mb-5" width="500" v-for="disciplina in disciplinas"
                     :key="disciplina.codigo_conteudo">
-                    <v-card-title primary-title>
-                      {{ disciplina.nome_disciplina }}
-                    </v-card-title>
-                    <v-card-subtitle>
-                      {{ disciplina.professor }}
-                    </v-card-subtitle>
-                    <v-card-text>
-                      <v-chip v-if="disciplina.videos.length > 0">
-                        <v-avatar left>
-                          {{ contar(disciplina.videos) }}
-                        </v-avatar>
-                        Videos
-                      </v-chip>
-                      <v-chip v-else color="error">
-                        <v-avatar left>
-                          0
-                        </v-avatar>
-                        Videos
-                      </v-chip>
-                    </v-card-text>
+
+                    <v-list-item three-line>
+                      <v-list-item-content>
+                        <div class="overline">
+                          {{disciplina.professor}}
+                        </div>
+                        <v-list-item-title class="headline">
+                          {{disciplina.nome_disciplina}}
+                        </v-list-item-title>
+
+                        <div class="v-card__text" @click="verlistadevideos(disciplina.videos)">
+                          <v-chip v-if="disciplina.videos.length > 0">
+                            <v-avatar left>
+                              {{ contar(disciplina.videos) }}
+                            </v-avatar>
+                            Videos
+                          </v-chip>
+                          <v-chip v-else color="error">
+                            <v-avatar left>
+                              0
+                            </v-avatar>
+                            Videos
+                          </v-chip>
+                        </div>
+
+                      </v-list-item-content>
+
+                      <v-list-item-avatar tile size="auto" class="display-1">{{disciplina.codigo_conteudo}}
+                      </v-list-item-avatar>
+                    </v-list-item>
                   </v-card>
                 </transition-group>
               </v-card>
@@ -781,11 +860,39 @@
 
           <!-- DIALOGO DE INSERCAO -->
 
+          <!-- VER VIDEOS -->
+
+          <v-dialog v-model="dialogvervideos" scrollable max-width="550" max-height="600">
+            <v-card>
+              <v-card-title id="titulo" style="color: #762051;">Videos</v-card-title>
+              <v-stepper v-model="e6" vertical>
+                <template v-for="(video, index) in listadevideos">
+
+                  <v-stepper-step :step="index" editable color="#762051">
+                    <template v-if="video.titulo != ''">
+                      {{video.titulo}}
+                    </template>
+                    <template v-else>
+                      VIDEO {{index+1}}
+                    </template>
+                  </v-stepper-step>
+
+                  <v-stepper-content :step="index">
+                    <v-card tile flat class="mb-12" height="240">
+                      <iframe :src="'https://player.vimeo.com/video/' + video.frame" width="426" height="240"
+                        frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+
+                    </v-card>
+                  </v-stepper-content>
+
+                </template>
+              </v-stepper>
+            </v-card>
+          </v-dialog>
+
+          <!-- VER VIDEOS -->
 
 
-          <!-- CONFIGURACOES -->
-
-          <!-- CONFIGURACOES -->
 
 
         </v-container>

@@ -8,12 +8,10 @@ import os
 
 eel.init('HTMLS', allowed_extensions=['.js', '.html'])
 
-path = os.getcwd() + "/config/"
-config = path + "config.json"
-semana = path + "semana.json"
+# path = os.getcwd() + "/"
+# semana = path + "semanateste.json"
 
-configuracoes = abrir_arquivo_json(config)
-disciplinas = abrir_arquivo_json(semana)
+# disciplinas = abrir_arquivo_json(semana)
 
 
 @eel.expose
@@ -64,5 +62,6 @@ def carregar_configuracoes():
 def insercao(opcao):
     iniciar_insercao(disciplinas, configuracoes, opcao)
 
+# inserir("Rutemberg", disciplinas, "Disciplinas teste", True)
 
 eel.start('index.html')

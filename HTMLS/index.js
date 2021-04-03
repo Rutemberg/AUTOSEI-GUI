@@ -62,10 +62,17 @@ function loginserirdisciplina(resultado) {
   mensagemDisciplina.push({ resultado, msg });
 }
 
+var ID = function () {
+  return Math.random().toString(26).substr(2, 9);
+};
+
 new Vue({
   el: "#app",
   vuetify: new Vuetify(),
   data: {
+    e6: 0,
+    disabled: false,
+    listaconfiguracoescadastradas: [],
     bancos: [],
     bancoselecionado: "",
     nomebanco: "",
@@ -90,6 +97,7 @@ new Vue({
     videos: [],
     videoparacadastrar: {},
     vervideos: false,
+    listadevideos: [],
     semana: false,
     disciplinassemana: [],
     disciplinassemanaparacadastrar: [],
@@ -97,7 +105,6 @@ new Vue({
     mensagemDisciplina,
     formularioinsercao: false,
     formulariobanco: false,
-    dialoglistadisciplinas: false,
     tabeladisciplina: "",
     camposDisciplina: {
       _id: "",
@@ -106,10 +113,21 @@ new Vue({
       codigo_conteudo: 6,
       professor: "Joao",
     },
+    camposconfiguracao: {
+      _id: ID(),
+      site: "https://sei.institutoprocessus.com.br/",
+      url_conteudo:
+        "https://sei.institutoprocessus.com.br/visaoAdministrativo/ead/conteudoCons.xhtml",
+      usuario: "",
+      senha: "",
+    },
+    dialoglistadisciplinas: false,
     dialoginsercao: false,
     dialogbanco: false,
     dialog: false,
     dialogRelatorio: false,
+    dialogconfiguracoes: false,
+    dialogvervideos: false,
     fab: false,
     fab2: false,
     titulo: false,
@@ -143,18 +161,82 @@ new Vue({
     window.removeEventListener("resize", this.onResize);
   },
   methods: {
+    verlistadevideos(lista) {
+      this.listadevideos = lista;
+      this.dialogvervideos = true;
+      this.e6 = 0
+    },
+    async removerconfiguracoes() {
+      let d = await eel.remover_documentos(
+        this.bancoselecionado,
+        "Configuracoes",
+        this.camposconfiguracao
+      )();
+
+      if (d > 0) {
+        this.camposconfiguracao.usuario = "";
+        this.camposconfiguracao.senha = "";
+
+        this.alertar(
+          true,
+          "Configuração removida com sucesso",
+          "mdi-check-bold",
+          "success"
+        );
+        await this.carregarconfiguracoes();
+      }
+    },
+    async inserirconfiguracoes() {
+      if (this.validarcampos(this.camposconfiguracao) == true) {
+        this.camposconfiguracao._id = ID();
+        let result = await eel.inserir_documento(
+          this.bancoselecionado,
+          this.camposconfiguracao,
+          "Configuracoes"
+        )();
+        if (result == true) {
+          this.alertar(
+            true,
+            "Configuracão adicionada!",
+            "mdi-check-bold",
+            "success"
+          );
+          this.dialogconfiguracoes = false;
+          await this.carregarconfiguracoes();
+        } else {
+          this.alertar(true, "Configuracão adicionada!", "alert", "error");
+        }
+      } else {
+        this.alertar(true, "Existem campos em branco!", "mdi-alert", "warning");
+      }
+    },
     fechardialoginsercao() {
       this.dialoginsercao = false;
       this.disciplinas = [];
     },
     async carregarbanco(banco) {
       this.bancoselecionado = banco;
-      let configuracoes = await eel.carregar_configuracoes()();
+      await this.carregarconfiguracoes();
       let semanas = await eel.listar_tabelas(this.bancoselecionado, "semana")();
-      await this.listartabelas();
       this.semanas = semanas.reverse();
-      this.configuracoes = configuracoes;
+
+      await this.listartabelas();
       this.dialogbanco = false;
+    },
+    async carregarconfiguracoes() {
+      this.camposconfiguracao.usuario = "";
+      this.camposconfiguracao.senha = "";
+      let configuracoes = await eel.listar_documentos(
+        this.bancoselecionado,
+        "Configuracoes"
+      )();
+      this.listaconfiguracoescadastradas = configuracoes;
+      if (configuracoes.length > 0) {
+        this.camposconfiguracao = configuracoes[0];
+        this.disabled = true;
+      } else {
+        this.disabled = false;
+      }
     },
     async listartabelas() {
       let tabelas = await eel.listar_tabelas(this.bancoselecionado, "disci")();
@@ -219,13 +301,13 @@ new Vue({
       }
     },
     validarcampos: function (arr) {
+      valida = true;
       for (var item in arr) {
         if (arr[item] == "") {
-          return false;
-        } else {
-          return true;
+          valida = false;
         }
       }
+      return valida;
     },
     contar: function (array) {
       return array.length;
@@ -404,9 +486,8 @@ new Vue({
       }
     },
     async montarsemanaparainsercao(semana) {
+      this.nomesemana = semana;
       if (this.nomedisciplina != "") {
-        this.nomesemana = semana;
-
         let disciplinas = await eel.carregar_disciplinas_para_insercao(
           this.bancoselecionado,
           this.nomedisciplina,
