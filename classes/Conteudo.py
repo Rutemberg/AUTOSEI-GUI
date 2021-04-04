@@ -12,21 +12,22 @@ class Inserir_Conteudo:
     # Inicia o driver caso a resposta seja sim ou s
     def __init__(self):
         self.options = Options()
-        self.options.add_experimental_option('excludeSwitches', ['enable-logging'])
+        self.options.add_experimental_option(
+            'excludeSwitches', ['enable-logging'])
         # self.options.add_argument("headless")
         self.driver = Chrome(options=self.options)
 
-
     # abre o site pela url
+
     def abrir(self, url):
         self.driver.get(url)
-    
+
     # Aguardar ate que a mensagem de loading suma
     def aguardar_processo(self):
         wait = WebDriverWait(self.driver, 60)
         # Aguarda até que o elemento(loading do sistema) suma da tela
         wait.until(EC.invisibility_of_element((By.CLASS_NAME, 'rf-st-start')))
-        
+
     # Loga no site usando o usuario e senha
     def logar(self, usuario, senha):
         # procura os elementos
@@ -41,7 +42,7 @@ class Inserir_Conteudo:
 
     # Pesquisa o conteudo
     def pesquisar_conteudo(self, url_conteudo, codigo_conteudo):
-        self.driver.get(url_conteudo) # navegue ate a url
+        self.driver.get(url_conteudo)  # navegue ate a url
         # Usando o select encontra o elemento select do html
         consultar_por = Select(self.driver.find_element_by_id("form:consulta"))
         # Seleciona o valor
@@ -49,11 +50,11 @@ class Inserir_Conteudo:
 
         self.aguardar_processo()
 
-        # Consulta pelo codigo do conteudo 
+        # Consulta pelo codigo do conteudo
         valor_consulta = self.driver.find_element_by_id("form:valorConsulta")
-        valor_consulta.clear() # limpa o campo
-        valor_consulta.send_keys(codigo_conteudo) # Escreve o codigo
-        # Clica no botao consultar 
+        valor_consulta.clear()  # limpa o campo
+        valor_consulta.send_keys(codigo_conteudo)  # Escreve o codigo
+        # Clica no botao consultar
         consultar = self.driver.find_element_by_id("form:consultar")
         consultar.click()
 
@@ -71,16 +72,18 @@ class Inserir_Conteudo:
     # Insere o titulo da semana
     def inserir_semana(self, semana):
         titulo_unidade = self.driver.find_element_by_id(
-            "form:unidadeConteudoTitulo") # Pega o input pelo id
-        titulo_unidade.send_keys(semana) # Digita o valor
+            "form:unidadeConteudoTitulo")  # Pega o input pelo id
+        titulo_unidade.send_keys(semana)  # Digita o valor
         adicionar = self.driver.find_element_by_xpath(
-            "//*[@id='form:j_idt595']") # pega o botao
-        adicionar.click() # clica para salvar
+            "//*[@id='form:j_idt595']")  # pega o botao
+        adicionar.click()  # clica para salvar
 
     # Adiciona pegando a ultima semana inserida
     def adicionar_video(self):
-        self.driver.find_elements_by_xpath(
-            "//*[@title='Adicionar Página']")[-1].click()
+        video = self.driver.find_elements_by_xpath(
+            "//*[@title='Adicionar Página']")[-1].get_attribute("id")
+        self.driver.execute_script(
+            f'document.getElementById("{video}").click()')
 
     # Insere os videos por titulo e frame
     def inserir_video(self, titulo, frame):
@@ -104,7 +107,7 @@ class Inserir_Prova(Inserir_Conteudo):
 
     def adicionar_prova(self):
         self.driver.find_elements_by_xpath(
-        "//*[@title='Adicionar Página']")[-1].click()
+            "//*[@title='Adicionar Página']")[-1].click()
 
     def inserir_informaçoes(self, titulo, informacao):
 
@@ -118,43 +121,47 @@ class Inserir_Prova(Inserir_Conteudo):
 
         self.driver.execute_script(
             'document.getElementById("formNovaPagina:salvar").click()')
-    
+
     def editar_conteudo(self):
         self.driver.find_elements_by_xpath(
             "//*[@title='Editar']")[-1].click()
-    
+
     def adicionar_avaliacao_online(self):
         self.driver.find_element_by_id("form:addPosterior").click()
-        id_elemento = self.driver.find_elements_by_xpath("//*[@title='Avalição Online']")[-1].get_attribute("id")
-        self.driver.execute_script(f'document.getElementById("{id_elemento}").click()')
-    
+        id_elemento = self.driver.find_elements_by_xpath(
+            "//*[@title='Avalição Online']")[-1].get_attribute("id")
+        self.driver.execute_script(
+            f'document.getElementById("{id_elemento}").click()')
+
     def adicionar_valor_por_id(self, id_elemento, valor):
         input_valor = self.driver.find_element_by_id(id_elemento)
         input_valor.send_keys(valor)
-    
+
     def adicionar_valor_por_path(self, path, valor):
         input_valor = self.driver.find_element_by_xpath(path)
         input_valor.send_keys(valor)
-    
+
     def selecionar_opcao(self, id_elemento, valor):
         selecionar_por = Select(self.driver.find_element_by_id(id_elemento))
         selecionar_por.select_by_value(valor)
 
     def selecionar_opcao_por_nome(self, nome_elemento, valor):
-        selecionar_por = Select(self.driver.find_element_by_name(nome_elemento))
+        selecionar_por = Select(
+            self.driver.find_element_by_name(nome_elemento))
         selecionar_por.select_by_value(valor)
-    
+
     def click_opcao_id(self, id_elemento):
         selecionar = self.driver.find_element_by_id(id_elemento)
         selecionar.click()
-    
+
     def inserir_descricao(self, descricao):
-        self.driver.execute_script(f'document.getElementById("formAddRecursoEducacional:textoAvaliacaoOnline").innerHTML = `{descricao}`')
+        self.driver.execute_script(
+            f'document.getElementById("formAddRecursoEducacional:textoAvaliacaoOnline").innerHTML = `{descricao}`')
 
     def limpar_campo(self, id_elemento):
         limpar = self.driver.find_element_by_id(id_elemento)
         limpar.clear()
-    
+
     def questoes(self, nivel, qtd, valor):
         if nivel == "facil":
             dificuldade = "formAddRecursoEducacional:quantidadeNivelQuestaoFacil"
@@ -162,18 +169,19 @@ class Inserir_Prova(Inserir_Conteudo):
         elif nivel == "medio":
             dificuldade = "formAddRecursoEducacional:quantidadeNivelQuestaoMedio"
             valor_por_q = "formAddRecursoEducacional:notaPorQuestaoNivelMedio"
-            
+
         elif nivel == "dificil":
-            id_elemento = self.driver.find_element_by_xpath("/html/body/div[1]/div[2]/table/tbody/tr/td/table/tbody/tr[17]/td/div/div[2]/div[4]/div/form/div[2]/div[1]/div/div[2]/table[1]/tbody/tr[1]/td[2]/span/input").get_attribute("id")
+            id_elemento = self.driver.find_element_by_xpath(
+                "/html/body/div[1]/div[2]/table/tbody/tr/td/table/tbody/tr[17]/td/div/div[2]/div[4]/div/form/div[2]/div[1]/div/div[2]/table[1]/tbody/tr[1]/td[2]/span/input").get_attribute("id")
             dificuldade = id_elemento
             valor_por_q = "formAddRecursoEducacional:notaPorQuestaoNivelDificil"
-           
 
         self.driver.execute_script(f'''document.getElementById("{dificuldade}").value = {qtd};
   document.getElementById("{valor_por_q}").value = "{valor}";
   document.getElementById("{dificuldade}").onchange();''')
 
-    
     def salvar_prova(self):
-        id_elemento = self.driver.find_element_by_xpath("/html/body/div[1]/div[2]/table/tbody/tr/td/table/tbody/tr[17]/td/div/div[2]/div[4]/div/form/table[2]/tbody/tr[3]/td/table/tbody/tr/td/input[1]").get_attribute("id")
-        self.driver.execute_script(f'document.getElementById("{id_elemento}").click()')
+        id_elemento = self.driver.find_element_by_xpath(
+            "/html/body/div[1]/div[2]/table/tbody/tr/td/table/tbody/tr[17]/td/div/div[2]/div[4]/div/form/table[2]/tbody/tr[3]/td/table/tbody/tr/td/input[1]").get_attribute("id")
+        self.driver.execute_script(
+            f'document.getElementById("{id_elemento}").click()')

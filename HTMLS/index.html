@@ -20,7 +20,7 @@
 
           <!-- MENU SUPERIOR -->
           <transition name="list">
-            <v-app-bar v-if="appbar" height="45" absolute top tile flat>
+            <v-app-bar v-if="menu" height="45" absolute top tile flat>
               <v-spacer></v-spacer>
               <v-speed-dial v-model="fab2" direction="bottom" transition="scroll-x-reverse-transition">
                 <template v-slot:activator>
@@ -181,9 +181,9 @@
 
           <!-- RELATORIO FINAL -->
           <v-dialog overlay-color="#762051" overlay-opacity="0.25" v-model="dialogRelatorio" persistent max-width="500">
-            <v-card>
+            <v-card color="white" max-height="600" style="overflow: auto;" class="pa-4">
 
-              <v-toolbar flat>
+              <v-toolbar app flat tile>
                 <v-icon large left color="#762051">mdi-check-bold</v-icon>
                 <b style="color: #762051;" id="titulo">Inserção finalizada com sucesso</b>
               </v-toolbar>
@@ -658,6 +658,7 @@
                 Disciplinas
               </v-btn>
               <v-speed-dial v-if="menu" v-model="fab" transition="scroll-x-reverse-transition">
+
                 <template v-slot:activator>
                   <v-btn v-model="fab" depressed dark large color="#762051">
                     <v-icon left v-if="fab">
@@ -669,22 +670,16 @@
                     Inserir
                   </v-btn>
                 </template>
+
                 <v-tooltip left>
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn v-bind="attrs" v-on="on" fab dark color="#762051" @click="dialoginsercao = true">
-                      <v-icon>mdi-play-box</v-icon>
-                    </v-btn>
-                  </template>
-                  <span>Inserir disciplina especifica</span>
-                </v-tooltip>
-                <v-tooltip left>
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn v-bind="attrs" v-on="on" fab dark color="#762051" @click="carregardisciplinas">
                       <v-icon>mdi-animation-play</v-icon>
                     </v-btn>
                   </template>
-                  <span>Inserir tudo</span>
+                  <span>Conferir e iniciar inserção</span>
                 </v-tooltip>
+
               </v-speed-dial>
               <!-- MENU -->
 
@@ -705,68 +700,6 @@
           <!-- APP BOTTOM -->
 
 
-          <!-- DIALOGO DE CONFIG DE DISCIPLINAS -->
-          <!-- <v-dialog v-model="dialog" fullscreen hide-overlay transition="dialog-bottom-transition">
-
-            <v-card color="#f8f8f8">
-
-              <v-toolbar dark color="#762051">
-                <v-btn icon dark @click="dialog = false">
-                  <v-icon>mdi-close</v-icon>
-                </v-btn>
-                <v-toolbar-title>Configurações "{{configuracoes.semana}}"</v-toolbar-title>
-                <v-spacer></v-spacer>
-                <v-btn rounded dark color="transparent" elevation="0" @click="iniciar('Sim')">
-                  <v-icon left>mdi-play</v-icon>
-                  iniciar
-                </v-btn>
-              </v-toolbar> -->
-
-          <!-- INFO DISCIPLINAS -->
-          <!-- <v-banner app single-line color="white" ripple>
-                <v-icon color="#762051" slot="icon" size="36">
-                  mdi-information
-                </v-icon>
-                Disciplinas encontradas: <strong>{{contar(disciplinas)}}</strong>
-                <br>
-                Videos a serem processados: <strong>{{contarvideos(disciplinas,false)}}</strong>
-                <br>
-                Disciplinas sem videos: <strong>{{contarvideos(disciplinas,true)}}</strong>
-              </v-banner> -->
-          <!-- INFO DISCIPLINAS -->
-
-
-          <!-- <v-card color="#f8f8f8" elevation="0" class="d-flex flex-wrap justify-center flex ma-10">
-                <v-card class="mx-auto mb-5" width="500" v-for="disciplina in disciplinas"
-                  :key="disciplina.codigo_conteudo">
-                  <v-card-title primary-title>
-                    {{ disciplina.nome_disciplina }}
-                  </v-card-title>
-                  <v-card-subtitle>
-                    {{ disciplina.professor }}
-                  </v-card-subtitle>
-                  <v-card-text>
-                    <v-chip v-if="disciplina.videos[0].frame != ''">
-                      <v-avatar left>
-                        {{ contar(disciplina.videos) }}
-                      </v-avatar>
-                      Videos
-                    </v-chip>
-                    <v-chip v-else color="error">
-                      <v-avatar left>
-                        0
-                      </v-avatar>
-                      Videos
-                    </v-chip>
-                  </v-card-text>
-                </v-card>
-              </v-card>
-
-            </v-card>
-          </v-dialog> -->
-          <!-- DIALOGO DE CONFIG DE DISCIPLINAS -->
-
-
           <!-- DIALOGO DE INSERCAO -->
           <v-dialog v-model="dialoginsercao" fullscreen hide-overlay transition="dialog-bottom-transition">
 
@@ -778,14 +711,14 @@
                   <v-icon>mdi-close</v-icon>
                 </v-btn>
                 <v-col cols="3">
-                  <v-select v-model="nomedisciplina" :items="tabelas" placeholder="Selecionar disciplinas"
+                  <v-select v-model="disciplinasselecionadas" :items="tabelas" placeholder="Selecionar disciplinas"
                     menu-props="auto" hide-details prepend-icon="mdi-file-import-outline" single-line
                     @change="montarsemanaparainsercao(nomesemana)"></v-select>
                 </v-col>
                 <v-spacer></v-spacer>
-                <v-btn rounded dark color="transparent" elevation="0" @click="iniciar('Sim')">
+                <v-btn rounded dark color="transparent" elevation="0" @click="dialogconfirmarinsercao = true">
                   <v-icon left>mdi-play</v-icon>
-                  iniciar
+                  Verificar para inserir
                 </v-btn>
               </v-toolbar>
               <!-- SELECAO DA DISCIPLINAS -->
@@ -892,8 +825,75 @@
 
           <!-- VER VIDEOS -->
 
+          <!-- CONFIRMACAO DE INSERCAO -->
+
+          <v-dialog v-model="dialogconfirmarinsercao" scrollable max-width="800">
+            <v-card color="white" max-height="600" style="overflow: auto;" class="pa-4">
+              <v-toolbar app flat tile>
+                <h6 id="titulo" class="text-h6" style="color: #762051;">{{nomesemana}}</h6>
+
+                <v-spacer></v-spacer>
+                <v-btn v-if="nomesemana != '' && listaconfiguracoescadastradas.length > 0 && contar(disciplinas) > 0"
+                  rounded dark color="#762051" elevation="0" @click="iniciar()">
+                  <v-icon left>mdi-play</v-icon>
+                  Iniciar
+                </v-btn>
+              </v-toolbar>
+
+              <v-banner app single-line color="white" ripple class="mb-5">
+                <v-icon color="#762051" slot="icon" size="36">
+                  mdi-information
+                </v-icon>
+                <br>
+                Disciplinas encontradas: <strong>{{contar(disciplinas)}}</strong> |
+                Videos a serem processados: <strong>{{contarvideos(disciplinas,false)}}</strong> |
+                Disciplinas sem videos: <strong>{{contarvideos(disciplinas,true)}}</strong>
+              </v-banner>
+
+              <template>
+                <v-expansion-panels inset focusable>
+                  <v-expansion-panel v-for="(disciplina,i) in disciplinas" :key="i">
+                    <v-expansion-panel-header>{{disciplina.nome_disciplina}}</v-expansion-panel-header>
+                    <v-expansion-panel-content>
+                      <template>
 
 
+                        <v-sheet class="mx-auto">
+                          <v-slide-group class="pa-4" active-class="success" show-arrows>
+                            <v-slide-item v-for="video in disciplina.videos" :key="n" v-slot="{ active, toggle }">
+                              <v-card class="ma-4" @click="toggle" tile flat>
+
+                                <v-card-title primary-title>
+                                  <template v-if="video.titulo != ''">
+                                    {{video.titulo}}
+                                  </template>
+                                  <template v-else>
+                                    Sem titulo
+                                  </template>
+                                </v-card-title>
+                                <v-card-text>
+
+                                  <iframe :src="'https://player.vimeo.com/video/' + video.frame" width="426"
+                                    height="240" frameborder="0" allow="autoplay; fullscreen; picture-in-picture"
+                                    allowfullscreen></iframe>
+                                </v-card-text>
+
+
+                              </v-card>
+                            </v-slide-item>
+                          </v-slide-group>
+                        </v-sheet>
+
+
+                      </template>
+                    </v-expansion-panel-content>
+                  </v-expansion-panel>
+                </v-expansion-panels>
+              </template>
+            </v-card>
+          </v-dialog>
+
+          <!-- CONFIRMACAO DE INSERCAO -->
 
         </v-container>
       </v-main>

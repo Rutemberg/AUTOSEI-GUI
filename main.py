@@ -59,8 +59,8 @@ def carregar_configuracoes():
 
 
 @eel.expose
-def insercao(opcao):
-    iniciar_insercao(disciplinas, configuracoes, opcao)
+def insercao(disciplinas, configuracoes, titulosemana, opcao):
+    iniciar_insercao(disciplinas, configuracoes, titulosemana, opcao)
 
 # inserir("Rutemberg", disciplinas, "Disciplinas teste", True)
 

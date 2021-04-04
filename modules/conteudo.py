@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 
 # funcao de insercao dos conteudos das disciplinas
 
-def iniciar_insercao(disciplinas, configuracoes, opcao):
+def iniciar_insercao(disciplinas, configuracoes, titulosemana, opcao):
     agora = datetime.now()
     hora_inicial = agora.strftime("%d/%m/%Y %H:%M:%S")
     total_videos = 0
@@ -35,7 +35,7 @@ def iniciar_insercao(disciplinas, configuracoes, opcao):
     #             log("app",
     #                 f"Código de conteudo {disciplina_codigo} não encontrado", "warn")
 
-    titulo_semana = configuracoes["semana"]
+    titulo_semana = titulosemana
     pasta_atual = os.getcwd()  # Pega a localizacao da pasta atual
 
     if "S" in opcao:
@@ -61,10 +61,10 @@ def iniciar_insercao(disciplinas, configuracoes, opcao):
             log(arquivo,
                 f"\n\n{disciplina['professor']} - {disciplina['nome_disciplina']}", "info", True)
 
-            videos = True if [x for x in disciplina["videos"] if x['frame'] != ''] else False
+            videos = True if len(disciplina["videos"]) > 0 else False
             eel.timeline(disciplina['professor'], disciplina['nome_disciplina'], videos, disciplina['codigo_conteudo'])
             # Se existir videos para serem lançados prossiga com a inserção
-            if [x for x in disciplina["videos"] if x['frame'] != '']:
+            if len(disciplina["videos"]) > 0:
                 
                 # Pesquisa a disciplina pela url e codigo
                 Processar.pesquisar_conteudo(
@@ -75,14 +75,14 @@ def iniciar_insercao(disciplinas, configuracoes, opcao):
                 Processar.selecionar_disciplina()
                 # Verifica se a semana em questão existe
                 semana_existe = Processar.verificar_conteudo(
-                    configuracoes["semana"])
+                    titulosemana)
 
                 # Se a semana nao existir prossiga com a inserção
                 if semana_existe == 0:
                     eel.logsemana(False, disciplina['codigo_conteudo'])
                     cont_titulo_video = 0
                     # Insere a semana
-                    Processar.inserir_semana(configuracoes["semana"])
+                    Processar.inserir_semana(titulosemana)
                     Processar.aguardar_processo()
 
                     for video in disciplina["videos"]:

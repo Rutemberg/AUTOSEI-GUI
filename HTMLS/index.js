@@ -80,7 +80,7 @@ new Vue({
     tabelas: [],
     semanas: [],
     nomesemana: "",
-    nomedisciplina: "",
+    disciplinasselecionadas: "",
     windowHeight: window.innerHeight,
     alert: {
       on: false,
@@ -121,6 +121,7 @@ new Vue({
       usuario: "",
       senha: "",
     },
+    dialogconfirmarinsercao: false,
     dialoglistadisciplinas: false,
     dialoginsercao: false,
     dialogbanco: false,
@@ -140,6 +141,7 @@ new Vue({
     disciplinas: [],
     qtddisciplinas: 0,
     configuracoes: [],
+    items: [],
     logDisciplinas: infodisciplinas,
     logVideos: titulovideos,
     semanainserida: semana,
@@ -164,7 +166,7 @@ new Vue({
     verlistadevideos(lista) {
       this.listadevideos = lista;
       this.dialogvervideos = true;
-      this.e6 = 0
+      this.e6 = 0;
     },
     async removerconfiguracoes() {
       let d = await eel.remover_documentos(
@@ -231,6 +233,7 @@ new Vue({
         "Configuracoes"
       )();
       this.listaconfiguracoescadastradas = configuracoes;
+      this.configuracoes = configuracoes[0];
       if (configuracoes.length > 0) {
         this.camposconfiguracao = configuracoes[0];
         this.disabled = true;
@@ -323,13 +326,22 @@ new Vue({
       });
       return qnt;
     },
-    iniciar: function (value) {
-      eel.insercao(value)();
-      this.dialog = false;
+    iniciar: function () {
+      eel.insercao(
+        this.disciplinas,
+        this.configuracoes,
+        this.nomesemana,
+        "Sim"
+      )();
+      this.dialoginsercao = false;
       this.timeline = true;
       this.menu = false;
       this.colorbar = "transparent";
       this.progresso = true;
+      this.dialogconfirmarinsercao = false;
+      // console.log(this.disciplinas);
+      // console.log(this.nomesemana);
+      // console.log(this.configuracoes);
     },
     deletarvideosemana: function (item) {
       var filtered = this.videos.filter(function (el) {
@@ -426,6 +438,8 @@ new Vue({
       this.menu = true;
       this.colorbar = "#762051";
       this.progresso = false;
+      this.timeline = false;
+      this.power = 0;
     },
     contvideos: function (arr, codigo) {
       let qtd = 0;
@@ -487,10 +501,10 @@ new Vue({
     },
     async montarsemanaparainsercao(semana) {
       this.nomesemana = semana;
-      if (this.nomedisciplina != "") {
+      if (this.disciplinasselecionadas != "" && this.nomesemana != "") {
         let disciplinas = await eel.carregar_disciplinas_para_insercao(
           this.bancoselecionado,
-          this.nomedisciplina,
+          this.disciplinasselecionadas,
           this.nomesemana
         )();
         this.disciplinas = disciplinas;
@@ -498,9 +512,9 @@ new Vue({
       } else {
         this.alertar(
           true,
-          "Escolha o grupo de disciplinas a serem inseridas",
+          "Escolha o grupo de disciplinas e clique na semana desejada",
           "mdi-alert",
-          "warning"
+          "info"
         );
       }
     },
@@ -512,12 +526,6 @@ new Vue({
     logVideos: function () {
       scrolltobottom();
     },
-    // nomesemana: function () {
-    //   console.log(this.nomesemana);
-    // },
-    // nomedisciplina: function () {
-    //   console.log(this.nomedisciplina);
-    // },
     logDisciplinas: function () {
       scrolltobottom();
       let pctgatual = this.logDisciplinas.length;
