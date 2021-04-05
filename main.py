@@ -9,7 +9,7 @@ import os
 eel.init('HTMLS', allowed_extensions=['.js', '.html'])
 
 # path = os.getcwd() + "/"
-# semana = path + "semanateste.json"
+# semana = path + "disciplinasluiz.json"
 
 # disciplinas = abrir_arquivo_json(semana)
 
@@ -62,6 +62,6 @@ def carregar_configuracoes():
 def insercao(disciplinas, configuracoes, titulosemana, opcao):
     iniciar_insercao(disciplinas, configuracoes, titulosemana, opcao)
 
-# inserir("Rutemberg", disciplinas, "Disciplinas teste", True)
+# inserir("Rutemberg", disciplinas, "Disciplinas luiz", True)
 
 eel.start('index.html')

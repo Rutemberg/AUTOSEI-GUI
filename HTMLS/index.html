@@ -7,7 +7,7 @@
   <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
-
+  <link rel="shortcut icon" type="imagem/x-icon" href="img/SEI.ico" />
   <!-- Include eel.js - note this file doesn't exist in the 'web' directory -->
   <script type="text/javascript" src="/eel.js"></script>
   </script>
@@ -113,7 +113,7 @@
                   remover configuração
                 </v-btn>
               </v-card-actions>
-              <!-- {{mensagemDisciplina}} -->
+
             </v-card>
           </v-dialog>
           <!-- CONFIGURACOES -->
@@ -137,7 +137,7 @@
                   Salvar
                 </v-btn>
               </v-card-actions>
-              <!-- {{mensagemDisciplina}} -->
+
             </v-card>
           </v-dialog>
           <!-- FORMULARIO DE CADASTRO DO BANCO -->
@@ -240,8 +240,8 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="#762051" text @click="fecharRelatorio()">
-                  Ok
+                <v-btn color="#762051" v-if="botaofecharrelatorio" text @click="fecharRelatorio()">
+                  Salvar e fechar
                 </v-btn>
               </v-card-actions>
 
@@ -435,7 +435,7 @@
                       Salvar
                     </v-btn>
                   </v-card-actions>
-                  <!-- {{mensagemDisciplina}} -->
+
                 </v-card>
               </v-dialog>
             </v-row>
@@ -519,7 +519,7 @@
             <v-card>
 
               <v-toolbar elevation="0" dark color="#762051">
-                <v-btn icon dark @click="semana = false">
+                <v-btn icon dark @click="semana = false, titulosemana = ''">
                   <v-icon>mdi-close</v-icon>
                 </v-btn>
                 <v-toolbar-title>Inserir frames da semana</v-toolbar-title>
@@ -701,7 +701,7 @@
 
 
           <!-- DIALOGO DE INSERCAO -->
-          <v-dialog v-model="dialoginsercao" fullscreen hide-overlay transition="dialog-bottom-transition">
+          <v-dialog v-model="dialoginsercao" fullscreen hide-overlay transition="dialog-bottom-transition" persistent>
 
             <v-card color="#f8f8f8">
 
@@ -830,7 +830,15 @@
           <v-dialog v-model="dialogconfirmarinsercao" scrollable max-width="800">
             <v-card color="white" max-height="600" style="overflow: auto;" class="pa-4">
               <v-toolbar app flat tile>
-                <h6 id="titulo" class="text-h6" style="color: #762051;">{{nomesemana}}</h6>
+                <h6 id="titulo" class="text-h6" style="color: #762051;">
+                  <template v-if="contar(disciplinas) > 0 && nomesemana != ''">
+                    {{nomesemana}}
+                  </template>
+                  <template v-else>
+                    Sem dados para inserção
+                  </template>
+
+                </h6>
 
                 <v-spacer></v-spacer>
                 <v-btn v-if="nomesemana != '' && listaconfiguracoescadastradas.length > 0 && contar(disciplinas) > 0"
@@ -859,7 +867,7 @@
 
 
                         <v-sheet class="mx-auto">
-                          <v-slide-group class="pa-4" active-class="success" show-arrows>
+                          <v-slide-group class="pa-4" show-arrows>
                             <v-slide-item v-for="video in disciplina.videos" :key="n" v-slot="{ active, toggle }">
                               <v-card class="ma-4" @click="toggle" tile flat>
 

@@ -2,13 +2,11 @@ eel.expose(timeline);
 eel.expose(logvideos);
 eel.expose(logsemana);
 eel.expose(relatoriofinal);
-eel.expose(loginserirdisciplina);
 
 var infodisciplinas = [];
 var titulovideos = [];
 var semana = [];
 var dadosr = [];
-var mensagemDisciplina = [];
 
 function timeline(nome, disciplina, video, codigo) {
   //   console.log(nome, disciplina, video, codigo);
@@ -26,7 +24,7 @@ function logvideos(titulo, codigo) {
 }
 
 function logsemana(inserida, codigo) {
-  console.log("Inserida: " + inserida + " Codigo : " + codigo);
+  // console.log("Inserida: " + inserida + " Codigo : " + codigo);
   semana.push({ inserida, codigo });
 }
 
@@ -35,7 +33,8 @@ function relatoriofinal(
   totaldisciplinas,
   totalvideos,
   totalDinseridas,
-  faltam
+  faltam,
+  data
 ) {
   // console.log(tempo, totaldisciplinas, totalvideos, totalDinseridas, faltam);
   dadosr.push({
@@ -44,8 +43,10 @@ function relatoriofinal(
     totalvideos,
     totalDinseridas,
     faltam,
+    data,
+    _id: ID()
   });
-  console.log(dadosr);
+  // console.log(dadosr);
 }
 
 function scrolltobottom() {
@@ -53,14 +54,6 @@ function scrolltobottom() {
   element.scrollIntoView({ behavior: "instant", block: "end" });
 }
 
-function loginserirdisciplina(resultado) {
-  if (resultado == true) {
-    msg = "Inserida com sucesso";
-  } else {
-    msg = "Disciplina já inserida";
-  }
-  mensagemDisciplina.push({ resultado, msg });
-}
 
 var ID = function () {
   return Math.random().toString(26).substr(2, 9);
@@ -70,6 +63,7 @@ new Vue({
   el: "#app",
   vuetify: new Vuetify(),
   data: {
+    botaofecharrelatorio: true,
     e6: 0,
     disabled: false,
     listaconfiguracoescadastradas: [],
@@ -102,7 +96,6 @@ new Vue({
     disciplinassemana: [],
     disciplinassemanaparacadastrar: [],
     listadisciplinas: [],
-    mensagemDisciplina,
     formularioinsercao: false,
     formulariobanco: false,
     tabeladisciplina: "",
@@ -348,7 +341,7 @@ new Vue({
         return el.frame != item;
       });
       this.videos = filtered;
-      console.log(this.videos);
+      // console.log(this.videos);
     },
     async inserirdisciplinas() {
       this.camposDisciplina._id = this.camposDisciplina.codigo_conteudo;
@@ -433,13 +426,21 @@ new Vue({
     limparlistadisciplinas: function () {
       this.dialoglistadisciplinas = false;
     },
-    fecharRelatorio: function () {
-      this.dialogRelatorio = false;
-      this.menu = true;
-      this.colorbar = "#762051";
-      this.progresso = false;
-      this.timeline = false;
-      this.power = 0;
+    async fecharRelatorio() {
+      this.botaofecharrelatorio = false
+      await eel.inserir_documento(
+        this.bancoselecionado,
+        this.dadosrelatorio,
+        "Relatorios",
+        true
+      )();
+      // this.dialogRelatorio = false;
+      // this.menu = true;
+      // this.colorbar = "#762051";
+      // this.progresso = false;
+      // this.timeline = false;
+      // this.power = 0;
+      document.location.reload();
     },
     contvideos: function (arr, codigo) {
       let qtd = 0;
@@ -508,7 +509,7 @@ new Vue({
           this.nomesemana
         )();
         this.disciplinas = disciplinas;
-        console.log(this.disciplinas);
+        // console.log(this.disciplinas);
       } else {
         this.alertar(
           true,
@@ -538,18 +539,20 @@ new Vue({
     },
     async titulosemana() {
       this.videos = [];
-      let titulosem = this.titulosemana.toUpperCase();
-      // console.log(titulosem);
-      let v = await eel.listar_documentos(this.bancoselecionado, titulosem)();
-      if (v.length > 0) {
-        this.videos = v;
-        this.vervideos = true;
-        this.alertar(
-          true,
-          `Foram encontrados ${v.length} frames cadastrados em ${titulosem}`,
-          "mdi-code-tags",
-          "info"
-        );
+      if (this.titulosemana != "") {
+        let titulosem = this.titulosemana.toUpperCase();
+        // console.log(titulosem);
+        let v = await eel.listar_documentos(this.bancoselecionado, titulosem)();
+        if (v.length > 0) {
+          this.videos = v;
+          this.vervideos = true;
+          this.alertar(
+            true,
+            `Foram encontrados ${v.length} frames cadastrados em ${titulosem}`,
+            "mdi-code-tags",
+            "info"
+          );
+        }
       }
     },
   },

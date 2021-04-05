@@ -23,8 +23,6 @@ def inserir(banco, document, tabela, muitos=False):
     else:
         print("Registro já existe!")
 
-    eel.loginserirdisciplina(result)
-
     return result
 
 
@@ -41,7 +39,7 @@ def listartudo(banco, tabela):
     else:
         for r in result:
             disciplinas.append(r)
-        print(disciplinas)
+        # print(disciplinas)
         return disciplinas
 
 

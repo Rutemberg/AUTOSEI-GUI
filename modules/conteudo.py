@@ -134,4 +134,4 @@ def iniciar_insercao(disciplinas, configuracoes, titulosemana, opcao):
     log("app",f"\nTempo de execução - {diferenca}", "info", True)
     print("-"*50)
     diferenca = str(diferenca)
-    eel.relatoriofinal(diferenca, len(disciplinas), total_videos, total_d_inseridas, d_faltam)
+    eel.relatoriofinal(diferenca, len(disciplinas), total_videos, total_d_inseridas, d_faltam, hora_final)

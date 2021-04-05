@@ -36,13 +36,13 @@ class ConteudoMDB:
             else:
                 q = self.table.insert_many(document)
 
-            print("Registrado com sucesso")
+            # print("Registrado com sucesso")
             return True
         except pymongo.errors.DuplicateKeyError:
-            print("Já existe um registro")
+            # print("Já existe um registro")
             return False
         except pymongo.errors.BulkWriteError:
-            print("Já existe um registro")
+            # print("Já existe um registro")
             return False
 
     def find_all(self):
