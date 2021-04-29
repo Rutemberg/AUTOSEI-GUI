@@ -49,7 +49,7 @@ class ConteudoMDB:
         query = self.table
         count = query.estimated_document_count()
         if count > 0:
-            result = query.find()
+            result = query.find({"$query": {}, "$orderby": {"_id": 1}})
             return result
         else:
             # print("Sem registros")

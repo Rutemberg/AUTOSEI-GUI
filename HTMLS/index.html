@@ -20,7 +20,7 @@
 
           <!-- MENU SUPERIOR -->
           <transition name="list">
-            <v-app-bar v-if="menu" height="45" absolute top tile flat>
+            <v-app-bar v-if="menu" height="45" style="z-index: 101;" absolute top tile flat>
               <v-spacer></v-spacer>
               <v-speed-dial v-model="fab2" direction="bottom" transition="scroll-x-reverse-transition">
                 <template v-slot:activator>
@@ -34,7 +34,7 @@
                     {{bancoselecionado}}
                   </v-btn>
                 </template>
-                <v-tooltip left>
+                <v-tooltip left style="z-index: 101;">
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn v-bind="attrs" v-on="on" fab dark color="#762051" @click="dialogbanco = true">
                       <v-icon>mdi-database-refresh</v-icon>
@@ -42,7 +42,7 @@
                   </template>
                   <span>Selecionar banco</span>
                 </v-tooltip>
-                <v-tooltip left>
+                <v-tooltip left style="z-index: 101;">
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn v-bind="attrs" v-on="on" fab dark color="#762051" @click="formulariobanco = true">
                       <v-icon>mdi-database-plus</v-icon>
@@ -240,6 +240,9 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
+                <v-btn color="#762051" v-if="botaofecharrelatorio" text @click="fecharRelatorio(false)">
+                  fechar
+                </v-btn>
                 <v-btn color="#762051" v-if="botaofecharrelatorio" text @click="fecharRelatorio()">
                   Salvar e fechar
                 </v-btn>
@@ -256,7 +259,7 @@
 
               <!-- LOGOTIPO -->
               <transition name="list">
-                <v-banner outlined="false" style="z-index: 100;" app single-line color="transparent" v-if="titulo">
+                <v-banner outlined="false" style="z-index: 100;" app single-line v-if="titulo" color="#f8f8f8">
                   <h1 class="text-h2" id="titulo"><b style="color: #762051;">AUTO</b>SEI </h1>
                 </v-banner>
               </transition>
@@ -464,7 +467,8 @@
               <!-- INFO DISCIPLINAS -->
               <v-banner v-if="tabelas.length > 0" app single-line color="#762051" ripple>
                 <v-card tile>
-                  <v-tabs background-color="#762051" center-active dark>
+                  <v-tabs background-color="#762051" center-active dark show-arrows>
+                    <v-tabs-slider color="#762051"></v-tabs-slider>
                     <v-tab v-for="tabela in tabelas" :key="tabela" @click="listardisciplinas(tabela)">{{tabela}}
                     </v-tab>
                   </v-tabs>
@@ -491,6 +495,9 @@
                         <v-list-item-title class="headline">
                           {{disciplina.nome_disciplina}}
                         </v-list-item-title>
+                        <div class="v-card__subtitle">
+                          {{disciplina.codigo_disciplina}}
+                        </div>
                       </v-list-item-content>
 
                       <v-list-item-avatar tile size="auto" class="display-1">{{disciplina.codigo_conteudo}}
@@ -534,10 +541,23 @@
                 <v-combobox append-icon="mdi-calendar-week" v-model="titulosemana" filled color="#762051"
                   :items="semanas" dark placeholder="DIGITE A SEMANA AQUI" clearable loading="#f8f8f8" flat hide-details
                   class="text-h4 pa-0"></v-combobox>
+
+                <v-card tile>
+                  <v-tabs background-color="#762051" center-active dark show-arrows>
+                    <v-tabs-slider color="#762051"></v-tabs-slider>
+                    <v-tab v-for="(disciplinas, key) in disciplinassemana" :key="key" @click="indexcarousel = key">
+                      {{disciplinas.nome_disciplina}}
+                      <v-badge v-if="contvideos(videos, disciplinas.codigo_conteudo) > 0" color="green"
+                        :content="contvideos(videos, disciplinas.codigo_conteudo)">
+                      </v-badge>
+
+                    </v-tab>
+                  </v-tabs>
+                </v-card>
               </v-banner>
 
               <v-carousel :continuous="false" hide-delimiters progress progress-color="#762051"
-                :height="windowHeight - 137">
+                :height="windowHeight - 185" v-model="indexcarousel">
                 <v-sheet color="#f8f8f8">
 
                   <v-carousel-item v-for="disciplinas in disciplinassemana" :key="disciplinas.codigo_conteudo">
@@ -606,7 +626,8 @@
                                           allowfullscreen></iframe>
                                       </div>
                                     </v-list-item-content>
-                                    <v-icon @click='deletar({"frame": video.frame})'>mdi-delete</v-icon>
+                                    <v-icon @click='deletar(disciplinas.codigo_conteudo,video.frame)'>mdi-delete
+                                    </v-icon>
                                   </v-list-item>
                                   <v-divider color="white"></v-divider>
                                 </template>
@@ -686,8 +707,8 @@
 
               <!-- BARRA DE PROGRESSO -->
               <v-progress-linear v-if="progresso" v-model="power" color="#762051" height="18" dark>
-                <template v-if="logDisciplinas.length != disciplinas.length">
-                  <strong>{{ logDisciplinas.length }} de {{disciplinas.length}}</strong>
+                <template v-if="logDisciplinas.length != progressocountdisciplinas">
+                  <strong>{{ logDisciplinas.length }} de {{progressocountdisciplinas}}</strong>
                 </template>
                 <template v-else>
                   <strong>Completo</strong>
@@ -726,7 +747,8 @@
               <!-- SELECAO DA SEMANA -->
               <v-banner v-if="semanas.length > 0" app single-line color="#762051" ripple>
                 <v-card tile>
-                  <v-tabs background-color="#762051" center-active dark>
+                  <v-tabs background-color="#762051" center-active dark show-arrows>
+                    <v-tabs-slider color="#762051"></v-tabs-slider>
                     <v-tab v-for="semana in semanas" :key="semana" @click="montarsemanaparainsercao(semana)">{{semana}}
                     </v-tab>
                   </v-tabs>
@@ -763,7 +785,8 @@
                           {{disciplina.nome_disciplina}}
                         </v-list-item-title>
 
-                        <div class="v-card__text" @click="verlistadevideos(disciplina.videos)">
+                        <div class="v-card__text"
+                          @click="verlistadevideos(disciplina.videos, disciplina.codigo_conteudo)">
                           <v-chip v-if="disciplina.videos.length > 0">
                             <v-avatar left>
                               {{ contar(disciplina.videos) }}
@@ -795,10 +818,17 @@
 
           <!-- VER VIDEOS -->
 
-          <v-dialog v-model="dialogvervideos" scrollable max-width="550" max-height="600">
+          <v-dialog v-model="dialogvervideos" scrollable max-width="550">
             <v-card>
-              <v-card-title id="titulo" style="color: #762051;">Videos</v-card-title>
-              <v-stepper v-model="e6" vertical>
+              <v-card-title> <b id="titulo" style="color: #762051;">Videos</b>
+                <v-spacer></v-spacer>
+                <v-btn v-if="contar(listadevideos) > 0" rounded dark color="#762051" elevation="0"
+                  @click="iniciar(disciplinaselecionada)">
+                  <v-icon left>mdi-play</v-icon>
+                  Inserir estes
+                </v-btn>
+              </v-card-title>
+              <v-stepper v-model="e6" vertical max-height="600" style="overflow-y: auto;">
                 <template v-for="(video, index) in listadevideos">
 
                   <v-stepper-step :step="index" editable color="#762051">

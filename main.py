@@ -9,9 +9,11 @@ import os
 eel.init('HTMLS', allowed_extensions=['.js', '.html'])
 
 # path = os.getcwd() + "/"
-# semana = path + "disciplinasluiz.json"
+# semana = path + "config/disciplinasprova.json"
+# configuracoes = path + "config/config.json"
 
 # disciplinas = abrir_arquivo_json(semana)
+# configuracao = abrir_arquivo_json(configuracoes)
 
 
 @eel.expose
@@ -43,6 +45,7 @@ def listar_tabelas(banco, nome):
 def criar_banco(nome):
     return criar_db(nome)
 
+
 @eel.expose
 def carregar_disciplinas_para_insercao(banco, grupo_disciplinas, semana_a_ser_inserida):
     return criar_semana_insercao(banco, grupo_disciplinas, semana_a_ser_inserida)
@@ -62,6 +65,8 @@ def carregar_configuracoes():
 def insercao(disciplinas, configuracoes, titulosemana, opcao):
     iniciar_insercao(disciplinas, configuracoes, titulosemana, opcao)
 
-# inserir("Rutemberg", disciplinas, "Disciplinas luiz", True)
+# # inserir("Henrique", disciplinas, "Disciplinas", True)
+
+# iniciar_insercao_prova(disciplinas, configuracao , "Sim")
 
 eel.start('index.html')

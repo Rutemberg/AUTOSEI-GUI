@@ -44,7 +44,7 @@ function relatoriofinal(
     totalDinseridas,
     faltam,
     data,
-    _id: ID()
+    _id: ID(),
   });
   // console.log(dadosr);
 }
@@ -54,7 +54,6 @@ function scrolltobottom() {
   element.scrollIntoView({ behavior: "instant", block: "end" });
 }
 
-
 var ID = function () {
   return Math.random().toString(26).substr(2, 9);
 };
@@ -63,6 +62,8 @@ new Vue({
   el: "#app",
   vuetify: new Vuetify(),
   data: {
+    progressocountdisciplinas: 0,
+    indexcarousel: 0,
     botaofecharrelatorio: true,
     e6: 0,
     disabled: false,
@@ -94,6 +95,7 @@ new Vue({
     listadevideos: [],
     semana: false,
     disciplinassemana: [],
+    disciplinaselecionada: [],
     disciplinassemanaparacadastrar: [],
     listadisciplinas: [],
     formularioinsercao: false,
@@ -101,10 +103,10 @@ new Vue({
     tabeladisciplina: "",
     camposDisciplina: {
       _id: "",
-      nome_disciplina: "Ciência Política",
-      codigo_disciplina: 94,
-      codigo_conteudo: 6,
-      professor: "Joao",
+      nome_disciplina: "",
+      codigo_disciplina: "",
+      codigo_conteudo: "",
+      professor: "",
     },
     camposconfiguracao: {
       _id: ID(),
@@ -156,9 +158,10 @@ new Vue({
     window.removeEventListener("resize", this.onResize);
   },
   methods: {
-    verlistadevideos(lista) {
+    verlistadevideos(lista, disciplinaselecionada) {
       this.listadevideos = lista;
       this.dialogvervideos = true;
+      this.disciplinaselecionada = disciplinaselecionada;
       this.e6 = 0;
     },
     async removerconfiguracoes() {
@@ -319,19 +322,29 @@ new Vue({
       });
       return qnt;
     },
-    iniciar: function () {
-      eel.insercao(
-        this.disciplinas,
-        this.configuracoes,
-        this.nomesemana,
-        "Sim"
-      )();
+    iniciar: function (codigo = null) {
+      let disciplinas = [];
+
+      if (codigo != null) {
+        let resultado = this.disciplinas.filter((obj) => {
+          return obj.codigo_conteudo === codigo;
+        });
+        disciplinas = resultado;
+      } else {
+        disciplinas = this.disciplinas;
+      }
+
+      this.progressocountdisciplinas = this.contar(disciplinas);
+
+      eel.insercao(disciplinas, this.configuracoes, this.nomesemana, "Sim")();
       this.dialoginsercao = false;
+      this.dialogvervideos = false;
       this.timeline = true;
       this.menu = false;
       this.colorbar = "transparent";
       this.progresso = true;
       this.dialogconfirmarinsercao = false;
+
       // console.log(this.disciplinas);
       // console.log(this.nomesemana);
       // console.log(this.configuracoes);
@@ -387,14 +400,15 @@ new Vue({
         this.bancoselecionado,
         tabela
       )();
-      this.listadisciplinas = disciplinas.reverse();
+      this.listadisciplinas = disciplinas;
       this.dialoglistadisciplinas = true;
     },
-    async deletar(document) {
+    async deletar(codigoconteudo, frame) {
+      let documento = { _id: `${codigoconteudo}_` + frame };
       let d = await eel.remover_documentos(
         this.bancoselecionado,
         this.titulosemana,
-        document
+        documento
       )();
 
       if (d > 0) {
@@ -426,14 +440,16 @@ new Vue({
     limparlistadisciplinas: function () {
       this.dialoglistadisciplinas = false;
     },
-    async fecharRelatorio() {
-      this.botaofecharrelatorio = false
-      await eel.inserir_documento(
-        this.bancoselecionado,
-        this.dadosrelatorio,
-        "Relatorios",
-        true
-      )();
+    async fecharRelatorio(salvar = true) {
+      this.botaofecharrelatorio = false;
+      if (salvar == true) {
+        await eel.inserir_documento(
+          this.bancoselecionado,
+          this.dadosrelatorio,
+          "Relatorios",
+          true
+        )();
+      }
       // this.dialogRelatorio = false;
       // this.menu = true;
       // this.colorbar = "#762051";
@@ -452,7 +468,7 @@ new Vue({
       return qtd;
     },
     async montarvideos(codigo) {
-      this.video._id = this.video.frame;
+      this.video._id = `${codigo}_` + this.video.frame;
 
       if (this.video.frame != "" && this.titulosemana != "") {
         this.videoparacadastrar._id = this.video._id;
@@ -530,7 +546,7 @@ new Vue({
     logDisciplinas: function () {
       scrolltobottom();
       let pctgatual = this.logDisciplinas.length;
-      let totalD = this.disciplinas.length;
+      let totalD = this.progressocountdisciplinas;
       this.power = (pctgatual / totalD) * 100;
     },
     dadosrelatorio: function () {

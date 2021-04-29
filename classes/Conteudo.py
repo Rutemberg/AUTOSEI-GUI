@@ -4,6 +4,7 @@ from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+from selenium.common import exceptions
 import sys
 
 
@@ -24,7 +25,7 @@ class Inserir_Conteudo:
 
     # Aguardar ate que a mensagem de loading suma
     def aguardar_processo(self):
-        wait = WebDriverWait(self.driver, 60)
+        wait = WebDriverWait(self.driver, 300)
         # Aguarda até que o elemento(loading do sistema) suma da tela
         wait.until(EC.invisibility_of_element((By.CLASS_NAME, 'rf-st-start')))
 
@@ -145,6 +146,12 @@ class Inserir_Prova(Inserir_Conteudo):
         selecionar_por = Select(self.driver.find_element_by_id(id_elemento))
         selecionar_por.select_by_value(valor)
 
+    def selecionar_assunto(self):
+        assunto = self.driver.find_elements_by_tag_name("select")[-2].get_attribute("name")
+        selecionar_por = Select(self.driver.find_element_by_name(assunto))
+        selecionar_por.select_by_value("75")
+
+
     def selecionar_opcao_por_nome(self, nome_elemento, valor):
         selecionar_por = Select(
             self.driver.find_element_by_name(nome_elemento))
@@ -180,8 +187,37 @@ class Inserir_Prova(Inserir_Conteudo):
   document.getElementById("{valor_por_q}").value = "{valor}";
   document.getElementById("{dificuldade}").onchange();''')
 
+    def xpath_click_script(self, path):
+        elemetoid = self.driver.find_element_by_xpath(
+            f"{path}").get_attribute("id")
+        self.driver.execute_script(
+            f'document.getElementById("{elemetoid}").click()')
+
+    def verificar_questoes(self):
+        try:
+            questoes = self.driver.find_element_by_xpath(
+                "/html/body/div[6]/div[4]/div/form/div/div/table/tbody/tr[1]/td/div/span").text
+            self.xpath_click_script("/html/body/div[6]/div[3]/input")
+            self.aguardar_processo()
+            self.xpath_click_script("/html/body/div[6]/div[3]/input")
+            self.aguardar_processo()
+
+            return {"texto": questoes, "tipo": "info"}
+
+        except exceptions.NoSuchElementException:
+            questoes = self.driver.find_element_by_xpath(
+                "/html/body/div[6]/div[4]/div/form/table[2]/tbody/tr/td/table/tbody/tr/td/table/tbody/tr/td").text
+            self.xpath_click_script("/html/body/div[6]/div[3]/input")
+            self.aguardar_processo()
+            return {"texto": questoes, "tipo": "warn"}
+    
     def salvar_prova(self):
         id_elemento = self.driver.find_element_by_xpath(
             "/html/body/div[1]/div[2]/table/tbody/tr/td/table/tbody/tr[17]/td/div/div[2]/div[4]/div/form/table[2]/tbody/tr[3]/td/table/tbody/tr/td/input[1]").get_attribute("id")
+        self.driver.execute_script(
+            f'document.getElementById("{id_elemento}").click()')
+    def salvar(self):
+        id_elemento = self.driver.find_element_by_xpath(
+            "/html/body/div[1]/div[2]/table/tbody/tr/td/table/tbody/tr[29]/td/form/table/tbody/tr[3]/td/table/tbody/tr[2]/td/table/tbody/tr/td/input[2]").get_attribute("id")
         self.driver.execute_script(
             f'document.getElementById("{id_elemento}").click()')
