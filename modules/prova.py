@@ -38,9 +38,9 @@ def iniciar_insercao_prova(disciplinas, configuracoes, iniciar, configuracao_pro
             if semana_existe == 0:
                 Prova.inserir_semana(configuracao_prova["titulo_semana"])
                 Prova.aguardar_processo()
-                Prova.selecionar_assunto()
-                Prova.salvar()
-                Prova.aguardar_processo()
+                # Prova.selecionar_assunto("85")
+                # Prova.salvar()
+                # Prova.aguardar_processo()
                 Prova.adicionar_prova()
                 Prova.aguardar_processo()
                 Prova.inserir_informaçoes(configuracao_prova["titulo_da_prova"], configuracao_prova["conteudo_apresentacao"])
@@ -51,15 +51,18 @@ def iniciar_insercao_prova(disciplinas, configuracoes, iniciar, configuracao_pro
                 Prova.adicionar_valor_por_id("formAddRecursoEducacional:tituloRE", configuracao_prova["titulo_da_prova"])
 
                 # Tipo Geração	
-                Prova.selecionar_opcao("formAddRecursoEducacional:politicaSelecaoQuestao", "QUESTOES_ASSUNTO_UNIDADE")
-                Prova.aguardar_processo()
+
 
                 # Política de Seleção de Questão	
+                Prova.selecionar_opcao("formAddRecursoEducacional:politicaSelecaoQuestao", "QUESTOES_TODOS_ASSUNTOS_CONTEUDO")
+                Prova.aguardar_processo()
 
                 # Regra de Distribuição de Questão	
+                Prova.selecionar_opcao("formAddRecursoEducacional:regraDistruicaoQuestaoAvaliacaoOnline", "QUANTIDADE_DISTRUIBUIDA_ENTRE_ASSUNTOS")
+                Prova.aguardar_processo()
 
                 # Parâmetros de Monitoramento das Avaliações	
-                Prova.selecionar_opcao_por_nome("formAddRecursoEducacional:j_idt1102", "1")
+                Prova.selecionar_opcao_por_path("/html/body/div[1]/div[2]/table/tbody/tr/td/table/tbody/tr[17]/td/div/div[2]/div[4]/div/form/div[2]/div[1]/table/tbody/tr[4]/td[2]/select", "1")
                 Prova.aguardar_processo()
 
                 # Acertos Considerar Aprovado	
@@ -77,7 +80,7 @@ def iniciar_insercao_prova(disciplinas, configuracoes, iniciar, configuracao_pro
                 # Nº Vezes Pode Repetir Avaliação On-line	
 
                 # Variável Nota Padrão Avaliação On-line	
-                Prova.selecionar_opcao("formAddRecursoEducacional:variavelNotaPadraoAvaliacaoOnline", "A1")
+                Prova.selecionar_opcao("formAddRecursoEducacional:variavelNotaPadraoAvaliacaoOnline", "SR")
 
                 # Permitir Repetições De Questões A Partir Da Segunda Avaliação On-line Do Aluno	
                 Prova.click_opcao_id("formAddRecursoEducacional:permiteRepeticoesDeQuestoesAPartirSegundaAvaliacaoOnlineAluno")
@@ -94,8 +97,12 @@ def iniciar_insercao_prova(disciplinas, configuracoes, iniciar, configuracao_pro
                 Prova.inserir_descricao(configuracao_prova["descricao"])
 
                 # Randômico Por Complexidade Da Questão
-                # Qtde. Questões Medianas
+
+                # Qtde. Questões facil
                 Prova.questoes(configuracao_prova["dificuldade"], configuracao_prova["qnt_de_questoes"], configuracao_prova["valor_por_questao"])
+                Prova.aguardar_processo()
+                # Qtde. Questões Medianas
+                Prova.questoes(configuracao_prova["dificuldade2"], configuracao_prova["qnt_de_questoes"], configuracao_prova["valor_por_questao"])
                 Prova.aguardar_processo()
 
                 #Simular prova e obter resposta

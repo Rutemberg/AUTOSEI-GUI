@@ -8,6 +8,19 @@ var titulovideos = [];
 var semana = [];
 var dadosr = [];
 
+// function converternumeroemromano(nome) {
+//   numerosromanos = ["II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
+//   let l = ""
+//   for (let n in numerosromanos) {
+//     if (nome.includes(numerosromanos[n]) == true) {
+//       l = `${nome} ${numerosromanos[n + 1]}`;
+//     } else {
+//       l = `${nome} ${numerosromanos[0]}`;
+//     }
+//   }
+//   return l;
+// }
+
 function timeline(nome, disciplina, video, codigo) {
   //   console.log(nome, disciplina, video, codigo);
   infodisciplinas.push({
@@ -215,8 +228,12 @@ new Vue({
     async carregarbanco(banco) {
       this.bancoselecionado = banco;
       await this.carregarconfiguracoes();
-      let semanas = await eel.listar_tabelas(this.bancoselecionado, "semana")();
-      this.semanas = semanas.reverse();
+      let semanas = await eel.listar_tabelas(this.bancoselecionado, "semana|.*dica")();
+      // semanas = semanas.filter((obj) => {
+      //   return obj != "Relatorios" && obj != "Configuracoes";
+      // });
+      semanas.sort()
+      this.semanas = semanas;
 
       await this.listartabelas();
       this.dialogbanco = false;
@@ -495,18 +512,28 @@ new Vue({
           )();
           if (v.length > 0) {
             this.videos = v;
+            // let titulos_frames = this.videos
+            // titulos_frames = titulos_frames.filter((obj) => {
+            //   return (
+            //     obj.codigo_conteudo === this.videoparacadastrar.codigo_conteudo
+            //   );
+            // });
+            // this.titulos_frames =
+            //   titulos_frames[this.contar(titulos_frames) - 1].titulo;
           }
           let semana = await eel.listar_tabelas(
             this.bancoselecionado,
-            "semana"
+            "semana|.*dica"
           )();
+          semana.sort();
           this.semanas = semana.reverse();
         } else {
           this.alertar(true, "Frame já cadastrado", "mdi-alert", "error");
         }
         // console.log(this.videos);
-        this.video.frame = "";
-        this.video.titulo = "";
+
+        // this.video.frame = "";
+        // this.video.titulo = "";
       } else {
         this.alertar(
           true,

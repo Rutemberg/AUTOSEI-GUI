@@ -75,8 +75,10 @@ class Inserir_Conteudo:
         titulo_unidade = self.driver.find_element_by_id(
             "form:unidadeConteudoTitulo")  # Pega o input pelo id
         titulo_unidade.send_keys(semana)  # Digita o valor
+        # adicionar = self.driver.find_element_by_xpath(
+        #     "//*[@id='form:j_idt595']")  # pega o botao
         adicionar = self.driver.find_element_by_xpath(
-            "//*[@id='form:j_idt595']")  # pega o botao
+            "/html/body/div[1]/div[2]/table/tbody/tr/td/table/tbody/tr[29]/td/form/table/tbody/tr[2]/td/div/div[3]/div/table/tbody/tr[2]/td/input")  # pega o botao
         adicionar.click()  # clica para salvar
 
     # Adiciona pegando a ultima semana inserida
@@ -90,8 +92,11 @@ class Inserir_Conteudo:
     def inserir_video(self, titulo, frame):
 
         # Script para inserir o valor em um documento por innerHTML
+
+        # 'document.getElementsByClassName("cke_wysiwyg_frame cke_reset")[0].contentDocument.body.innerHTML = ' + f'`<iframe src="https://player.vimeo.com/video/{frame}" width="640" height="360" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`'
+
         self.driver.execute_script(
-            'document.getElementsByClassName("cke_wysiwyg_frame cke_reset")[0].contentDocument.body.innerHTML = ' + f'`<iframe src="https://player.vimeo.com/video/{frame}" width="640" height="360" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`')
+            'document.getElementsByClassName("cke_wysiwyg_frame cke_reset")[0].contentDocument.body.innerHTML = ' + f'`<div style="padding:75% 0 0 0;position:relative;"><iframe src="https://player.vimeo.com/video/{frame}?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen;picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;"></iframe></div><script src="https://player.vimeo.com/api/player.js"></script>`')
 
         # Escreve o titulo no input encontrado
         titulo_video = self.driver.find_element_by_id("formNovaPagina:titulo")
@@ -146,15 +151,20 @@ class Inserir_Prova(Inserir_Conteudo):
         selecionar_por = Select(self.driver.find_element_by_id(id_elemento))
         selecionar_por.select_by_value(valor)
 
-    def selecionar_assunto(self):
+    def selecionar_assunto(self, valor):
         assunto = self.driver.find_elements_by_tag_name("select")[-2].get_attribute("name")
         selecionar_por = Select(self.driver.find_element_by_name(assunto))
-        selecionar_por.select_by_value("75")
+        selecionar_por.select_by_value(valor)
 
 
     def selecionar_opcao_por_nome(self, nome_elemento, valor):
         selecionar_por = Select(
             self.driver.find_element_by_name(nome_elemento))
+        selecionar_por.select_by_value(valor)
+
+    def selecionar_opcao_por_path(self, path_elemento, valor):
+        selecionar_por = Select(
+            self.driver.find_element_by_xpath(path_elemento))
         selecionar_por.select_by_value(valor)
 
     def click_opcao_id(self, id_elemento):
@@ -197,6 +207,11 @@ class Inserir_Prova(Inserir_Conteudo):
         try:
             questoes = self.driver.find_element_by_xpath(
                 "/html/body/div[6]/div[4]/div/form/div/div/table/tbody/tr[1]/td/div/span").text
+
+            numero_questoes = self.driver.find_element_by_xpath(
+                "/html/body/div[6]/div[4]/div/form/div/div/table/tbody/tr[2]/td/div/span").text
+            questoes = questoes + "\n" + "Geradas: " + numero_questoes[-11:]
+
             self.xpath_click_script("/html/body/div[6]/div[3]/input")
             self.aguardar_processo()
             self.xpath_click_script("/html/body/div[6]/div[3]/input")

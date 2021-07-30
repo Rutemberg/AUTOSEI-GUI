@@ -8,13 +8,6 @@ import os
 
 eel.init('HTMLS', allowed_extensions=['.js', '.html'])
 
-# path = os.getcwd() + "/"
-# semana = path + "config/disciplinasprova.json"
-# configuracoes = path + "config/config.json"
-
-# disciplinas = abrir_arquivo_json(semana)
-# configuracao = abrir_arquivo_json(configuracoes)
-
 
 @eel.expose
 def inserir_documento(banco, document, tabela, muitos=False):
@@ -65,8 +58,18 @@ def carregar_configuracoes():
 def insercao(disciplinas, configuracoes, titulosemana, opcao):
     iniciar_insercao(disciplinas, configuracoes, titulosemana, opcao)
 
-# # inserir("Henrique", disciplinas, "Disciplinas", True)
+eel.start('index.html')
 
+
+
+
+# path = os.getcwd() + "/"
+# semana = path + "config/Joao.json"
+# configuracoes = path + "config/config.json"
+
+# disciplinas = abrir_arquivo_json(semana)
+# configuracao = abrir_arquivo_json(configuracoes)
+
+# inserir("João", disciplinas, "Disciplinas 2021.2", True)
 # iniciar_insercao_prova(disciplinas, configuracao , "Sim")
 
-eel.start('index.html')
