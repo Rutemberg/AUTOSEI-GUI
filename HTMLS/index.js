@@ -383,11 +383,11 @@ new Vue({
         let result = await eel.inserir_documento(
           this.bancoselecionado,
           this.camposDisciplina,
-          this.tabeladisciplina.toUpperCase()
+          this.tabeladisciplina
         )();
         if (result == true) {
           this.formularioinsercao = false;
-          await this.listardisciplinas(this.tabeladisciplina.toUpperCase());
+          await this.listardisciplinas(this.tabeladisciplina);
           this.alertar(
             true,
             "Disciplina inserida com sucesso",
