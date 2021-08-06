@@ -6,6 +6,8 @@ from modules.conteudoMDB import *
 from util.funcoes import *
 import os
 
+
+# APLICAÇÂO
 eel.init('HTMLS', allowed_extensions=['.js', '.html'])
 
 
@@ -61,15 +63,15 @@ def insercao(disciplinas, configuracoes, titulosemana, opcao):
 eel.start('index.html')
 
 
-
+# INSERÇÂO DE DISCIPLINAS NO BANCO
 
 # path = os.getcwd() + "/"
-# semana = path + "config/Joao.json"
+# semana = path + "config/henrique.json"
 # configuracoes = path + "config/config.json"
 
 # disciplinas = abrir_arquivo_json(semana)
 # configuracao = abrir_arquivo_json(configuracoes)
 
-# inserir("João", disciplinas, "Disciplinas 2021.2", True)
+# inserir("Henrique", disciplinas, "Disciplinas 2021.2", True)
 # iniciar_insercao_prova(disciplinas, configuracao , "Sim")
 

@@ -532,7 +532,7 @@ new Vue({
         }
         // console.log(this.videos);
 
-        // this.video.frame = "";
+        this.video.frame = "";
         // this.video.titulo = "";
       } else {
         this.alertar(
