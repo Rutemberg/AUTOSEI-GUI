@@ -93,7 +93,7 @@ class Inserir_Conteudo:
 
         # Script para inserir o valor em um documento por innerHTML
 
-        'document.getElementsByClassName("cke_wysiwyg_frame cke_reset")[0].contentDocument.body.innerHTML = ' + f'`<iframe src="https://player.vimeo.com/video/{frame}" width="640" height="360" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`'
+        self.driver.execute_script('document.getElementsByClassName("cke_wysiwyg_frame cke_reset")[0].contentDocument.body.innerHTML = ' + f'`<iframe src="https://player.vimeo.com/video/{frame}" width="640" height="360" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`')
 
         # self.driver.execute_script(
         #     'document.getElementsByClassName("cke_wysiwyg_frame cke_reset")[0].contentDocument.body.innerHTML = ' + f'`<div style="padding:75% 0 0 0;position:relative;"><iframe src="https://player.vimeo.com/video/{frame}?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen;picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;"></iframe></div><script src="https://player.vimeo.com/api/player.js"></script>`')

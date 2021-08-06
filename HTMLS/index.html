@@ -737,7 +737,7 @@
                     @change="montarsemanaparainsercao(nomesemana)"></v-select>
                 </v-col>
                 <v-spacer></v-spacer>
-                <v-btn rounded dark color="transparent" elevation="0" @click="dialogconfirmarinsercao = true">
+                <v-btn v-if="listaconfiguracoescadastradas.length > 0" rounded dark color="transparent" elevation="0" @click="dialogconfirmarinsercao = true">
                   <v-icon left>mdi-play</v-icon>
                   Verificar para inserir
                 </v-btn>
